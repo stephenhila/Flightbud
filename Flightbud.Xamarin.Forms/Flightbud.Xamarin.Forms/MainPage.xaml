@@ -10,13 +10,11 @@
                        StyleClass="Header"/>
                 <ListView x:Name="MenuItemsList"
                           ItemsSource="{Binding MenuItems}"
+                          ItemSelected="OnItemSelected"
                           StyleClass="MenuList">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <ViewCell.ContextActions>
-                                    <MenuItem Text="{Binding Text}" IconImageSource="{Binding IconImageSource}" />
-                                </ViewCell.ContextActions>
                                 <StackLayout Orientation="Horizontal">
                                     <Image Source="{Binding IconImageSource}" />
                                     <Label Text="{Binding Text}" />
