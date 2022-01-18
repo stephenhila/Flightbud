@@ -1,0 +1,16 @@
+﻿.Header {
+    color: white;
+    font: 900;
+    font-size: large;
+    text-align: center;
+}
+
+.MenuList Label {
+    color: lightgray;
+    font-size: medium;
+    font: 500;
+}
+
+.MenuList Image {
+    display: block;
+}
