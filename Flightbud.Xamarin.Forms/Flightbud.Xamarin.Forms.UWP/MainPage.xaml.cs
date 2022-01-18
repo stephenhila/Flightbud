@@ -20,7 +20,8 @@ namespace Flightbud.Xamarin.Forms.UWP
         public MainPage()
         {
             this.InitializeComponent();
-
+            global::Xamarin.FormsMaps.Init("rDFzuoHYGIOMksDDmgAF~g0AFGzuC_TlPuU8bVsTFew~AqLP1dKdQ3FsVPqLflh84t7qX9R_oKU--qM_FlEHaQHo_QqM-TbiaWJknQ1N3QQG");
+            Windows.Services.Maps.MapService.ServiceToken = "rDFzuoHYGIOMksDDmgAF~g0AFGzuC_TlPuU8bVsTFew~AqLP1dKdQ3FsVPqLflh84t7qX9R_oKU--qM_FlEHaQHo_QqM-TbiaWJknQ1N3QQG";
             LoadApplication(new Flightbud.Xamarin.Forms.App());
         }
     }

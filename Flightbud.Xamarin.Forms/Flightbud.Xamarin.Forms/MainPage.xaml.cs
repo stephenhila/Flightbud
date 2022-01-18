@@ -32,7 +32,7 @@ namespace Flightbud.Xamarin.Forms
             if (item != null)
             {
                 Detail = new NavigationPage((Page)Activator.CreateInstance(item.TargetType));
-                (sender as ListView).SelectedItem = null;
+                //(sender as ListView).SelectedItem = null;
                 IsPresented = false;
             }
         }
