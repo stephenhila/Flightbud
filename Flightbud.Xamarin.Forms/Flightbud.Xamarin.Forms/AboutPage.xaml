@@ -4,7 +4,8 @@
              x:Class="Flightbud.Xamarin.Forms.AboutPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Hello About Page!" />
+            <Label Text="Author: Stephen Hila" />
+            <Label Text="Data courtesy of: www.openaip.net" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
