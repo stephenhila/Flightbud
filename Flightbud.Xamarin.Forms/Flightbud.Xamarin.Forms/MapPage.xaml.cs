@@ -15,7 +15,12 @@ namespace Flightbud.Xamarin.Forms
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage
     {
-        MapPageViewModel viewModel = new MapPageViewModel(new Map { IsShowingUser = true, MapType = MapType.Hybrid }, null);
+        MapPageViewModel viewModel = new MapPageViewModel(
+            new Map 
+                { 
+                    IsShowingUser = true, 
+                    MapType = MapType.Satellite
+                }, null);
         public MapPage()
         {
             InitializeComponent();

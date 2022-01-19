@@ -6,7 +6,7 @@
         <ContentPage Title="Menu">
             <StackLayout>
                 <Image Source="{Binding IconApp}" />
-                <Label Text="Flight Buddy"
+                <Label Text="{Binding Title}"
                        StyleClass="Header"/>
                 <ListView x:Name="MenuItemsList"
                           ItemsSource="{Binding MenuItems}"

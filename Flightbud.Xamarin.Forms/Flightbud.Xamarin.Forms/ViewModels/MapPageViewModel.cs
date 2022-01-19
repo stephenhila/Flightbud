@@ -12,6 +12,8 @@ namespace Flightbud.Xamarin.Forms.ViewModels
         public Map Map { get; set; }
         public MapSpan MapSpan { get; set; }
         public Position MapCenter { get; set; }
+        public double LatitudeSpanDegrees { get; set; } = 0.05;
+        public double LongitudeSpanDegrees { get; set; } = 0.05;
 
         Location _currentLocation;
         public Location CurrentLocation
@@ -36,7 +38,7 @@ namespace Flightbud.Xamarin.Forms.ViewModels
         public void Update()
         {
             MapCenter = new Position(_currentLocation.Latitude, _currentLocation.Longitude);
-            MapSpan = new MapSpan(MapCenter, 0.01, 0.01);
+            MapSpan = new MapSpan(MapCenter, LatitudeSpanDegrees, LongitudeSpanDegrees);
             Map.MoveToRegion(MapSpan);
         }
     }

@@ -8,16 +8,13 @@ namespace Flightbud.Xamarin.Forms.ViewModels
 {
     public class MainPageViewModel : ViewModelBase
     {
-        public string IconApp { get; set; }
+        public string Title { get; set; } = "Flightbud";
+        public string IconApp { get; set; } = "icon_app.png";
         public ObservableCollection<MenuItem> MenuItems { get; set; }
 
         public MainPageViewModel(List<MenuItem> menuItems)
         {
-            IconApp = "icon_app.png";
             MenuItems = new ObservableCollection<MenuItem>(menuItems);
-
-            OnPropertyChanged("IconApp");
-            OnPropertyChanged("MenuItems");
         }
     }
 }
