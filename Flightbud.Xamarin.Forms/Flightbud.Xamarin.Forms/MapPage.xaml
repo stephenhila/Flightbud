@@ -4,6 +4,24 @@
              xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              x:Class="Flightbud.Xamarin.Forms.MapPage">
     <ContentPage.Content>
-        <maps:Map x:Name="NavigationMap" />
+        <ContentView Content="{Binding Map}" />
+        <!--<maps:Map x:Name="NavigationMap" 
+                  IsShowingUser="True" 
+                  MapType="Hybrid">
+            <x:Arguments>
+                <maps:MapSpan>
+                    <x:Arguments>
+                        <maps:Position>
+                            <x:Arguments>
+                                <x:Double>14.569703</x:Double>
+                                <x:Double>121.066802</x:Double>
+                            </x:Arguments>
+                        </maps:Position>
+                        <x:Double>0.01</x:Double>
+                        <x:Double>0.01</x:Double>
+                    </x:Arguments>
+                </maps:MapSpan>
+            </x:Arguments>
+        </maps:Map>-->
     </ContentPage.Content>
 </ContentPage>
