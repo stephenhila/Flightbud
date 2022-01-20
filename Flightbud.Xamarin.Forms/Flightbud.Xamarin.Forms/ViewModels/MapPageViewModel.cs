@@ -14,8 +14,7 @@ namespace Flightbud.Xamarin.Forms.ViewModels
         public Map Map { get; set; }
         public MapSpan MapSpan { get; set; }
         public Position MapCenter { get; set; }
-        public double LatitudeSpanDegrees { get; set; } = 0.15;
-        public double LongitudeSpanDegrees { get; set; } = 0.15;
+        public double MapSpanRadius { get; set; }
 
         Location _currentLocation;
         public Location CurrentLocation
@@ -33,30 +32,20 @@ namespace Flightbud.Xamarin.Forms.ViewModels
 
         public List<Airport> Airports { get; set; } = new List<Airport>();
 
-        public MapPageViewModel(Map map, Location location)
+        public MapPageViewModel(Map map, Location location, double mapSpanRadius)
         {
             Map = map;
             CurrentLocation = location;
+            MapSpanRadius = mapSpanRadius;
         }
 
         public void Update()
         {
-            MapCenter = new Position(_currentLocation.Latitude, _currentLocation.Longitude);
-            MapSpan = new MapSpan(MapCenter, LatitudeSpanDegrees, LongitudeSpanDegrees);
             Map.MoveToRegion(MapSpan);
+            Map.Pins.Clear();
 
             // add POI's
-            var pinsWithinMapSpan = 
-                Airports.Where(a => a.Position.Latitude < MapCenter.Latitude + MapSpan.LatitudeDegrees
-                                 && a.Position.Latitude > MapCenter.Latitude - MapSpan.LatitudeDegrees
-                                 && a.Position.Longitude < MapCenter.Longitude + MapSpan.LongitudeDegrees
-                                 && a.Position.Longitude > MapCenter.Longitude - MapSpan.LongitudeDegrees
-                              ).Select(a => a.MapPin);
-
-            foreach (var pin in pinsWithinMapSpan)
-            {
-                Map.Pins.Add(pin);
-            }
+            Airports.ForEach(a => Map.Pins.Add(a.MapPin));
         }
     }
 }
