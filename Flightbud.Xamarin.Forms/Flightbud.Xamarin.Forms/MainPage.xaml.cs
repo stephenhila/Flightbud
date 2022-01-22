@@ -10,7 +10,7 @@ using Xamarin.Forms;
 
 namespace Flightbud.Xamarin.Forms
 {
-    public partial class MainPage : MasterDetailPage
+    public partial class MainPage : FlyoutPage
     {
         public MainPage()
         {
