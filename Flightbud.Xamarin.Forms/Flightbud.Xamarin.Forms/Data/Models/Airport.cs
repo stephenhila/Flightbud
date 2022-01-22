@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Flightbud.Xamarin.Forms.View.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms.Maps;
 
-namespace Flightbud.Xamarin.Forms.DataModels
+namespace Flightbud.Xamarin.Forms.Data.Models
 {
     public class Airport
     {
@@ -23,17 +24,19 @@ namespace Flightbud.Xamarin.Forms.DataModels
         }
 
         [CsvHelper.Configuration.Attributes.Ignore]
-        Pin _pin;
+        AirportPin _pin;
         [CsvHelper.Configuration.Attributes.Ignore]
-        public Pin MapPin 
+        public AirportPin MapPin 
         {
             get 
             {
                 if (_pin == null)
                 {
-                    _pin = new Pin 
+                    _pin = new AirportPin 
                     {
+                        Address = Code,
                         Label = Code,
+                        Name = Name,
                         Position = Position,
                     };
                 }

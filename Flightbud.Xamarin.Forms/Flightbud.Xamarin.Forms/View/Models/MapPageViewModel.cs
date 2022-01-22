@@ -1,4 +1,4 @@
-﻿using Flightbud.Xamarin.Forms.DataModels;
+﻿using Flightbud.Xamarin.Forms.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +7,11 @@ using Xamarin.Essentials;
 using Xamarin.Forms.Maps;
 using Map = Xamarin.Forms.Maps.Map;
 
-namespace Flightbud.Xamarin.Forms.ViewModels
+namespace Flightbud.Xamarin.Forms.View.Models
 {
     public class MapPageViewModel : ViewModelBase
     {
-        public Map Map { get; set; }
+        public AviationMap Map { get; set; }
         public MapSpan MapSpan { get; set; }
         public Position MapCenter { get; set; }
         public double MapSpanRadius { get; set; }
@@ -32,7 +32,7 @@ namespace Flightbud.Xamarin.Forms.ViewModels
 
         public List<Airport> Airports { get; set; } = new List<Airport>();
 
-        public MapPageViewModel(Map map, Location location, double mapSpanRadius)
+        public MapPageViewModel(AviationMap map, Location location, double mapSpanRadius)
         {
             Map = map;
             CurrentLocation = location;
@@ -42,10 +42,12 @@ namespace Flightbud.Xamarin.Forms.ViewModels
         public void Update()
         {
             Map.MoveToRegion(MapSpan);
+            Map.AirportPins.Clear();
             Map.Pins.Clear();
 
             // add POI's
-            Airports.ForEach(a => Map.Pins.Add(a.MapPin));
+            Airports.ForEach(a => Map.AirportPins.Add(a.MapPin));
+            //Airports.ForEach(a => Map.Pins.Add(a.MapPin));
         }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Flightbud.Xamarin.Forms.ViewModels
+namespace Flightbud.Xamarin.Forms.View.Models
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

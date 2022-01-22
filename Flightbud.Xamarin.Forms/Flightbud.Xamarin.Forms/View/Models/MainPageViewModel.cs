@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Xamarin.Forms;
 
-namespace Flightbud.Xamarin.Forms.ViewModels
+namespace Flightbud.Xamarin.Forms.View.Models
 {
     public class MainPageViewModel : ViewModelBase
     {

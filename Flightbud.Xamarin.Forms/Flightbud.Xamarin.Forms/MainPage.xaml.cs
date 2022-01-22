@@ -1,4 +1,4 @@
-﻿using Flightbud.Xamarin.Forms.ViewModels;
+﻿using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -1,7 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
-using Flightbud.Xamarin.Forms.DataModels;
-using Flightbud.Xamarin.Forms.ViewModels;
+using Flightbud.Xamarin.Forms.Data.Facade;
+using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,14 +22,18 @@ namespace Flightbud.Xamarin.Forms
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage
     {
+        IMapRegionData<Airport> airportData;
+
         MapPageViewModel viewModel = new MapPageViewModel(
-            new Map { IsShowingUser = true, MapType = MapType.Satellite}, 
+            new AviationMap { IsShowingUser = true, MapType = MapType.Satellite}, 
             null,
             10/*KMs*/);
         public MapPage()
         {
             InitializeComponent();
             BindingContext = viewModel;
+
+            airportData = new AirportData();
         }
 
         protected override async void OnAppearing()
@@ -39,34 +44,8 @@ namespace Flightbud.Xamarin.Forms
             viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
             viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
 
-            var airportsCsvResourceId = "Flightbud.Xamarin.Forms.Assets.world-airports.csv";
-            var assembly = Assembly.GetExecutingAssembly();
-            Stream stream = assembly.GetManifestResourceStream(airportsCsvResourceId);
+            viewModel.Airports = airportData.Get(viewModel.MapCenter, viewModel.MapSpanRadius);
 
-            using (var reader = new System.IO.StreamReader(stream))
-            {
-                if (reader != null)
-                {
-                    using (var csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ","}))
-                    {
-                        csvReader.Read();
-                        csvReader.ReadHeader();
-                        while (csvReader.Read())
-                        {
-                            var latitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("latitude_deg"));
-                            var longitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("longitude_deg"));
-                            if (latitudeDegreeField < viewModel.MapCenter.Latitude + viewModel.MapSpan.LatitudeDegrees
-                                 && latitudeDegreeField > viewModel.MapCenter.Latitude - viewModel.MapSpan.LatitudeDegrees
-                                 && longitudeDegreeField < viewModel.MapCenter.Longitude + viewModel.MapSpan.LongitudeDegrees
-                                 && longitudeDegreeField > viewModel.MapCenter.Longitude - viewModel.MapSpan.LongitudeDegrees)
-                            {
-                                Airport airport = csvReader.GetRecord<Airport>();
-                                viewModel.Airports.Add(airport);
-                            }
-                        }
-                    }
-                }
-            }
             viewModel.Update();
         }
     }
