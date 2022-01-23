@@ -16,11 +16,11 @@
             <RowDefinition Height="80" />
         </Grid.RowDefinitions>
         <Image Source="icon_app.png" Width="100" />
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="White" Opacity="0.5" Padding="20,0,20,0">
-            <Image Source="icon_pin_lightmagenta.png" Width="24"  />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="LightGray" Opacity="0.6" Padding="20,0,20,0">
+            <Image Source="ms-appx:///Assets/icon_pin_lightmagenta.png" Width="24"  />
             <StackPanel Margin="20,10,20,0">
-                <TextBlock x:Name="Label" FontWeight="Bold" />
-                <TextBlock x:Name="Address" />
+                <TextBlock FontWeight="Bold" 
+                           Text="{Binding SelectedMapItem.Name}"/>
             </StackPanel>
             <Button Tapped="OnInfoButtonTapped">
                 <Button.Template>

@@ -1,4 +1,5 @@
-﻿using Flightbud.Xamarin.Forms.UWP;
+﻿using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.UWP;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,14 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(AviationMap), typeof(CustomMapRenderer))]
 namespace Flightbud.Xamarin.Forms.UWP
 {
+    /// <summary>
+    /// Custom map renderer for the UWP platform only.
+    /// </summary>
     public class CustomMapRenderer : MapRenderer
     {
         MapControl nativeMap;
-        List<AirportPin> airportPins;
         AirportPinOverlay airportPinOverlay;
-        bool xamarinOverlayShown = false;
+        MapPageViewModel viewModel;
 
         protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
         {
@@ -35,16 +38,23 @@ namespace Flightbud.Xamarin.Forms.UWP
 
             if (e.NewElement != null)
             {
-                var formsMap = (AviationMap)e.NewElement;
-                nativeMap = Control as MapControl;
-                airportPins = formsMap.AirportPins;
+                if (e.NewElement is AviationMap)
+                {
+                    var formsMap = (AviationMap)e.NewElement;
+                    nativeMap = Control as MapControl;
+
+                    if (viewModel == null)
+                    {
+                        viewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
+                    }
+                }
 
                 nativeMap.Children.Clear();
                 nativeMap.MapElementClick += OnMapElementClick;
 
-                foreach (var pin in airportPins)
+                foreach (var poi in viewModel.PointsOfInterest)
                 {
-                    var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
+                    var snPosition = new BasicGeoposition { Latitude = poi.Position.Latitude, Longitude = poi.Position.Longitude };
                     var snPoint = new Geopoint(snPosition);
 
                     var mapIcon = new MapIcon();
@@ -62,11 +72,11 @@ namespace Flightbud.Xamarin.Forms.UWP
         {
             base.OnElementPropertyChanged(sender, e);
             Console.WriteLine(e.PropertyName);
-            if (e.PropertyName == "Renderer" || e.PropertyName == "VisibleRegion")
+            if (e.PropertyName == "VisibleRegion")
             {
+                //viewModel.PointsOfInterest.AddRange(airportData.Get(viewModel.MapCenter, viewModel.MapSpanRadius).Cast<MapItemBase>().ToList());
 
-
-                foreach (var pin in airportPins)
+                foreach (var pin in (sender as AviationMap).AirportPins)
                 {
                     var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
                     var snPoint = new Geopoint(snPosition);
@@ -88,18 +98,24 @@ namespace Flightbud.Xamarin.Forms.UWP
             if (mapIcon != null)
             {
                 nativeMap.Children.Remove(airportPinOverlay);
-                var customPin = GetCustomPin(mapIcon.Location.Position);
-                if (customPin == null)
+                var mapItem = GetMapItem(mapIcon.Location.Position);
+                if (mapItem == null)
                 {
                     throw new Exception("Custom pin not found");
                 }
 
                 if (airportPinOverlay == null)
                 {
-                    airportPinOverlay = new AirportPinOverlay(customPin);
+                    MapItemOverlayViewModel overlayViewModel = new MapItemOverlayViewModel();
+                    overlayViewModel.SelectedMapItem = mapItem;
+                    airportPinOverlay = new AirportPinOverlay(overlayViewModel);
+                }
+                else
+                {
+                    airportPinOverlay.ViewModel.SelectedMapItem = mapItem;
                 }
 
-                var snPosition = new BasicGeoposition { Latitude = customPin.Position.Latitude, Longitude = customPin.Position.Longitude };
+                var snPosition = new BasicGeoposition { Latitude = mapItem.Position.Latitude, Longitude = mapItem.Position.Longitude };
                 var snPoint = new Geopoint(snPosition);
 
                 nativeMap.Children.Add(airportPinOverlay);
@@ -108,17 +124,17 @@ namespace Flightbud.Xamarin.Forms.UWP
             }
         }
 
-        AirportPin GetCustomPin(BasicGeoposition position)
+        MapItemBase GetMapItem(BasicGeoposition position)
         {
             var pos = new Position(position.Latitude, position.Longitude);
-            foreach (var pin in airportPins)
+            foreach (var item in viewModel.PointsOfInterest)
             {
-                if (pin.Position == pos)
+                if (item.Position == pos)
                 {
-                    return pin;
+                    return item;
                 }
             }
-            return null;
+            return default;
         }
     }
 }

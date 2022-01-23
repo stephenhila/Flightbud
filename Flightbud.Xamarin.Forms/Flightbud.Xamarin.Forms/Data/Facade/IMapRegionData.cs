@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Flightbud.Xamarin.Forms.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Facade
 {
-    public interface IMapRegionData<T>
+    /// <summary>
+    /// Interface used as signature for retrieving map items based off of map region data.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IMapRegionData<T> where T : MapItemBase
     {
         /// <summary>
         /// 

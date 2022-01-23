@@ -6,23 +6,11 @@ using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
 {
-    public class Airport
+    /// <summary>
+    /// A single airport item data.
+    /// </summary>
+    public class Airport : MapItemBase
     {
-        [CsvHelper.Configuration.Attributes.Ignore]
-        Position _position;
-        [CsvHelper.Configuration.Attributes.Ignore]
-        public Position Position 
-        {
-            get 
-            { 
-                if (_position == default)
-                {
-                    _position = new Position(Latitude, Longitude);
-                }
-                return _position;
-            }
-        }
-
         [CsvHelper.Configuration.Attributes.Ignore]
         AirportPin _pin;
         [CsvHelper.Configuration.Attributes.Ignore]
@@ -51,10 +39,10 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         [CsvHelper.Configuration.Attributes.Name("type")]
         public string Type { get; set; }
         [CsvHelper.Configuration.Attributes.Name("name")]
-        public string Name { get; set; }
+        public override string Name { get; set; }
         [CsvHelper.Configuration.Attributes.Name("latitude_deg")]
-        public double Latitude { get; set; }
+        public override double Latitude { get; set; }
         [CsvHelper.Configuration.Attributes.Name("longitude_deg")]
-        public double Longitude { get; set; }
+        public override double Longitude { get; set; }
     }
 }

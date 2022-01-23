@@ -9,6 +9,9 @@ using Map = Xamarin.Forms.Maps.Map;
 
 namespace Flightbud.Xamarin.Forms.View.Models
 {
+    /// <summary>
+    /// View Model for MapPage.xaml DataContext
+    /// </summary>
     public class MapPageViewModel : ViewModelBase
     {
         public AviationMap Map { get; set; }
@@ -30,24 +33,20 @@ namespace Flightbud.Xamarin.Forms.View.Models
             }
         }
 
-        public List<Airport> Airports { get; set; } = new List<Airport>();
+        public List<MapItemBase> PointsOfInterest { get; set; }
 
         public MapPageViewModel(AviationMap map, Location location, double mapSpanRadius)
         {
             Map = map;
             CurrentLocation = location;
             MapSpanRadius = mapSpanRadius;
+
+            PointsOfInterest = new List<MapItemBase>();
         }
 
         public void Update()
         {
             Map.MoveToRegion(MapSpan);
-            Map.AirportPins.Clear();
-            Map.Pins.Clear();
-
-            // add POI's
-            Airports.ForEach(a => Map.AirportPins.Add(a.MapPin));
-            //Airports.ForEach(a => Map.Pins.Add(a.MapPin));
         }
     }
 }

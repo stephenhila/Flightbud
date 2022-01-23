@@ -24,13 +24,14 @@ namespace Flightbud.Xamarin.Forms
     {
         IMapRegionData<Airport> airportData;
 
-        MapPageViewModel viewModel = new MapPageViewModel(
-            new AviationMap { IsShowingUser = true, MapType = MapType.Satellite}, 
-            null,
-            10/*KMs*/);
+        MapPageViewModel viewModel;
         public MapPage()
         {
             InitializeComponent();
+            viewModel = new MapPageViewModel(
+            this.AviationMap,
+            null,
+            10/*KMs*/);
             BindingContext = viewModel;
 
             airportData = new AirportData();
@@ -44,9 +45,9 @@ namespace Flightbud.Xamarin.Forms
             viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
             viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
 
-            viewModel.Airports = airportData.Get(viewModel.MapCenter, viewModel.MapSpanRadius);
+            viewModel.PointsOfInterest.AddRange(airportData.Get(viewModel.MapCenter, viewModel.MapSpanRadius).Cast<MapItemBase>().ToList());
 
-            viewModel.Update();
+            viewModel.Map.MoveToRegion(viewModel.MapSpan);
         }
     }
 }

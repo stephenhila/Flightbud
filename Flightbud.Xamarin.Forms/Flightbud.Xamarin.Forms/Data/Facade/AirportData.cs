@@ -11,6 +11,9 @@ using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Facade
 {
+    /// <summary>
+    /// Facade to manage data from the Airports data file.
+    /// </summary>
     public class AirportData : IMapRegionData<Airport>
     {
         public List<Airport> Get(Position center, double radius)

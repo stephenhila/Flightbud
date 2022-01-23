@@ -5,7 +5,7 @@
     <ContentPage.Content>
         <StackLayout>
             <Label Text="Author: Stephen Hila" />
-            <Label Text="Data courtesy of: www.openaip.net" />
+            <Label Text="Airport data thanks to ourairports.com" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

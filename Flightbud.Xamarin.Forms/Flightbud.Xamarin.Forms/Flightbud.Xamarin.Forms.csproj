@@ -11,11 +11,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\world-airports.csv" />
+    <None Remove="Assets\airport-frequencies.csv" />
+    <None Remove="Assets\airports.csv" />
+    <None Remove="Assets\countries.csv" />
+    <None Remove="Assets\navaids.csv" />
+    <None Remove="Assets\regions.csv" />
+    <None Remove="Assets\runways.csv" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\world-airports.csv" />
+    <EmbeddedResource Include="Assets\airport-frequencies.csv" />
+    <EmbeddedResource Include="Assets\airports.csv" />
+    <EmbeddedResource Include="Assets\countries.csv" />
+    <EmbeddedResource Include="Assets\navaids.csv" />
+    <EmbeddedResource Include="Assets\regions.csv" />
+    <EmbeddedResource Include="Assets\runways.csv" />
   </ItemGroup>
 
   <ItemGroup>
