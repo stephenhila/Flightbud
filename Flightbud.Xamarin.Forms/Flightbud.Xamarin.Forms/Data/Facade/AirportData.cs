@@ -40,10 +40,14 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                             // this is a hard-coded field. yes it is. fite me again!!!
                             var latitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("latitude_deg"));
                             var longitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("longitude_deg"));
+                            var airportType = csvReader.GetField<string>(csvReader.GetFieldIndex("type"));
                             if (latitudeDegreeField < center.Latitude + (region.LatitudeDegrees / 2)
                                  && latitudeDegreeField > center.Latitude - (region.LatitudeDegrees / 2)
                                  && longitudeDegreeField < center.Longitude + (region.LongitudeDegrees / 2)
-                                 && longitudeDegreeField > center.Longitude - (region.LongitudeDegrees / 2))
+                                 && longitudeDegreeField > center.Longitude - (region.LongitudeDegrees / 2)
+                                 && (airportType == "small_airport" 
+                                  || airportType == "medium_airport" 
+                                  || airportType == "large_airport"))
                             {
                                 Airport airport = csvReader.GetRecord<Airport>();
                                 airports.Add(airport);

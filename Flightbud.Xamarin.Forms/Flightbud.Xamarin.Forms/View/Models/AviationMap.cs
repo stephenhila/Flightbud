@@ -1,4 +1,5 @@
-﻿using Flightbud.Xamarin.Forms.Data.Models;
+﻿using Flightbud.Xamarin.Forms.Data;
+using Flightbud.Xamarin.Forms.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,29 @@ namespace Flightbud.Xamarin.Forms.View.Models
         {
             get
             {
-                return ItemsSource.OfType<Airport>()?.Select(a => a.MapPin).ToList();
+                return ItemsSource?.OfType<Airport>()?.Select(a => a.MapPin).ToList();
             }
         }
         public AviationMap()
         {
             //AirportPins = new List<AirportPin>();
         }
+
+        public void OnVisibleRegionChanged(VisibleRegionChangedEventArgs e)
+        {
+            if (VisibleRegionChanged != null && VisibleRegion.Radius.Kilometers < Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD)
+            {
+                VisibleRegionChanged(this, e);
+            }
+        }
+
+        public event VisibleRegionChangedEventHandler VisibleRegionChanged;
     }
+
+
+    public class VisibleRegionChangedEventArgs : EventArgs
+    {
+        // just in-case we need more parameters for the event args.. never know..
+    }
+    public delegate void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e);
 }

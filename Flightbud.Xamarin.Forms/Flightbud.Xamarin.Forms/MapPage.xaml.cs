@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using Flightbud.Xamarin.Forms.Data;
 using Flightbud.Xamarin.Forms.Data.Facade;
 using Flightbud.Xamarin.Forms.Data.Models;
 using Flightbud.Xamarin.Forms.View.Models;
@@ -35,19 +36,47 @@ namespace Flightbud.Xamarin.Forms
             BindingContext = viewModel;
 
             airportData = new AirportData();
+
+            //Device.StartTimer(TimeSpan.FromSeconds(15), CurrentLocationUpdate_Tick);
+            CurrentLocationUpdate_Tick();
         }
 
-        protected override async void OnAppearing()
+        private bool CurrentLocationUpdate_Tick()
         {
-            base.OnAppearing();
+            BeginCurrentLocationUpdate();
+            return true;
+        }
 
-            viewModel.CurrentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
-            viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
-            viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
+        private void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
+        {
+            List<MapItemBase> airportsInRange = airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers).Cast<MapItemBase>().ToList();
+            int newItems = 0;
 
-            viewModel.PointsOfInterest.AddRange(airportData.Get(viewModel.MapCenter, viewModel.MapSpanRadius).Cast<MapItemBase>().ToList());
+            foreach (var airport in airportsInRange)
+            {
+                if (!viewModel.MapItems.Exists(a => a.Name == airport.Name))
+                {
+                    viewModel.MapItems.Add(airport);
+                    newItems++;
+                }
+            }
 
-            viewModel.Map.MoveToRegion(viewModel.MapSpan);
+            if (newItems > 0)
+            {
+                viewModel.MapItemsUpdating = true;
+            }
+        }
+
+        private async void BeginCurrentLocationUpdate()
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                viewModel.CurrentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
+                viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
+                viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
+
+                viewModel.Map.MoveToRegion(viewModel.MapSpan);
+            });
         }
     }
 }

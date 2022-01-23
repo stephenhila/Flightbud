@@ -52,7 +52,7 @@ namespace Flightbud.Xamarin.Forms.UWP
                 nativeMap.Children.Clear();
                 nativeMap.MapElementClick += OnMapElementClick;
 
-                foreach (var poi in viewModel.PointsOfInterest)
+                foreach (var poi in viewModel.MapItems)
                 {
                     var snPosition = new BasicGeoposition { Latitude = poi.Position.Latitude, Longitude = poi.Position.Longitude };
                     var snPoint = new Geopoint(snPosition);
@@ -72,23 +72,35 @@ namespace Flightbud.Xamarin.Forms.UWP
         {
             base.OnElementPropertyChanged(sender, e);
             Console.WriteLine(e.PropertyName);
-            if (e.PropertyName == "VisibleRegion")
+            if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
-                //viewModel.PointsOfInterest.AddRange(airportData.Get(viewModel.MapCenter, viewModel.MapSpanRadius).Cast<MapItemBase>().ToList());
+                (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
 
-                foreach (var pin in (sender as AviationMap).AirportPins)
+                if (viewModel.MapItemsUpdating)
                 {
-                    var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
-                    var snPoint = new Geopoint(snPosition);
+                    if ((sender as AviationMap).AirportPins == null)
+                        return;
 
-                    var mapIcon = new MapIcon();
-                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/icon_pin_solidblue.png"));
-                    mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
-                    mapIcon.Location = snPoint;
-                    mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
-
-                    nativeMap.MapElements.Add(mapIcon);
+                    UpdatePins(sender as AviationMap);
+                    viewModel.MapItemsUpdating = false;
                 }
+            }
+        }
+
+        protected void UpdatePins(AviationMap map)
+        {
+            foreach (var pin in map.AirportPins)
+            {
+                var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
+                var snPoint = new Geopoint(snPosition);
+
+                var mapIcon = new MapIcon();
+                mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/icon_pin_solidblue.png"));
+                mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
+                mapIcon.Location = snPoint;
+                mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
+
+                nativeMap.MapElements.Add(mapIcon);
             }
         }
 
@@ -120,14 +132,14 @@ namespace Flightbud.Xamarin.Forms.UWP
 
                 nativeMap.Children.Add(airportPinOverlay);
                 MapControl.SetLocation(airportPinOverlay, snPoint);
-                MapControl.SetNormalizedAnchorPoint(airportPinOverlay, new Windows.Foundation.Point(0.5, 1.0));
+                MapControl.SetNormalizedAnchorPoint(airportPinOverlay, new Windows.Foundation.Point(0.5, 0.75));
             }
         }
 
         MapItemBase GetMapItem(BasicGeoposition position)
         {
             var pos = new Position(position.Latitude, position.Longitude);
-            foreach (var item in viewModel.PointsOfInterest)
+            foreach (var item in viewModel.MapItems)
             {
                 if (item.Position == pos)
                 {

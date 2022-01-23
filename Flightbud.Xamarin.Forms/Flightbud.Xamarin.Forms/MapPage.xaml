@@ -9,7 +9,8 @@
             <models:AviationMap x:Name="AviationMap" 
                                 IsShowingUser="True"
                                 MapType="Satellite"
-                                ItemsSource="{Binding PointsOfInterest}">
+                                ItemsSource="{Binding MapItems}"
+                                VisibleRegionChanged="VisibleRegionChangedEventHandler">
                 <models:AviationMap.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Position="{Binding Position}" />
