@@ -6,10 +6,9 @@ using Flightbud.Xamarin.Forms.Data.Models;
 using Flightbud.Xamarin.Forms.Droid;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.Android;
@@ -53,28 +52,28 @@ namespace Flightbud.Xamarin.Forms.Droid
             }
         }
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.OnElementPropertyChanged(sender, e);
 
             if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
-                (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
+                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
 
                 if ((sender as AviationMap).AirportPins == null)
                     return;
 
-                UpdatePins(sender as AviationMap);
+                await UpdatePins(sender as AviationMap);
             }
         }
 
-        protected void UpdatePins(AviationMap map)
+        protected async Task UpdatePins(AviationMap map)
         {
             foreach (var pin in map.AirportPins)
             {
                 if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
                 {
-                    Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
+                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
                 }
             }
         }

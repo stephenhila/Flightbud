@@ -3,7 +3,6 @@ using Flightbud.Xamarin.Forms.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
 
@@ -23,11 +22,11 @@ namespace Flightbud.Xamarin.Forms.View.Models
 
         }
 
-        public void OnVisibleRegionChanged(VisibleRegionChangedEventArgs e)
+        public async Task OnVisibleRegionChanged(VisibleRegionChangedEventArgs e)
         {
             if (VisibleRegionChanged != null && VisibleRegion.Radius.Kilometers < Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD)
             {
-                VisibleRegionChanged(this, e);
+                await VisibleRegionChanged(this, e);
             }
         }
 
@@ -39,5 +38,5 @@ namespace Flightbud.Xamarin.Forms.View.Models
     {
         // just in-case we need more parameters for the event args.. never know..
     }
-    public delegate void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e);
+    public delegate Task VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e);
 }

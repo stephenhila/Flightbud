@@ -69,13 +69,13 @@ namespace Flightbud.Xamarin.Forms.UWP
             }
         }
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.OnElementPropertyChanged(sender, e);
 
             if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
-                (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
+                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
 
                 if ((sender as AviationMap).AirportPins == null)
                     return;
@@ -99,7 +99,7 @@ namespace Flightbud.Xamarin.Forms.UWP
                     mapIcon.Location = snPoint;
                     mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
 
-                    Device.InvokeOnMainThreadAsync(() => nativeMap.MapElements.Add(mapIcon));
+                    nativeMap.MapElements.Add(mapIcon);
                 }
             }
         }

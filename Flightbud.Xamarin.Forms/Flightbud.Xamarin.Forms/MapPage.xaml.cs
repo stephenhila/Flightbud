@@ -1,23 +1,15 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using Flightbud.Xamarin.Forms.Data;
+﻿using Flightbud.Xamarin.Forms.Data;
 using Flightbud.Xamarin.Forms.Data.Facade;
 using Flightbud.Xamarin.Forms.Data.Models;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Xaml;
-using Map = Xamarin.Forms.Maps.Map;
 
 namespace Flightbud.Xamarin.Forms
 {
@@ -38,19 +30,23 @@ namespace Flightbud.Xamarin.Forms
 
             airportData = new AirportData();
 
-            //Device.StartTimer(TimeSpan.FromSeconds(15), CurrentLocationUpdate_Tick);
-            CurrentLocationUpdate_Tick();
-        }
-
-        private bool CurrentLocationUpdate_Tick()
-        {
             BeginCurrentLocationUpdate();
-            return true;
         }
 
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        private async void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
+        /// <summary>
+        /// Handles the event where Visible Region changes in the AviationMap.
+        /// 
+        /// Implements cancellation logic, wherein if more Visible Region changes happen, 
+        /// the previous attempt is cancelled as the new position takes new priority.
+        /// 
+        /// This is to optimize and prevent multiple instances of the app trying to
+        /// pull data from the data sources for each minute change in the map visible region.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async Task VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
         {
             cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
@@ -60,7 +56,7 @@ namespace Flightbud.Xamarin.Forms
             try
             {
                 await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
-                List<MapItemBase> airportsInRange = await Task.Run(() => airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct);
+                IEnumerable<MapItemBase> airportsInRange = await Task.Run(() => airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct);
 
                 foreach (var airport in airportsInRange)
                 {
@@ -72,7 +68,6 @@ namespace Flightbud.Xamarin.Forms
             }
             catch (OperationCanceledException oce)
             {
-                // if you use your two eyes you would notice that nothing is being done in this catch block..
             }
             catch (Exception ex)
             {
