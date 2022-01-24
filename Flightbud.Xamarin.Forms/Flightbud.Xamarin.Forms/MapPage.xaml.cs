@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -23,7 +24,7 @@ namespace Flightbud.Xamarin.Forms
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage
     {
-        IMapRegionData<Airport> airportData;
+        IMapRegionData<MapItemBase> airportData;
 
         MapPageViewModel viewModel;
         public MapPage()
@@ -47,23 +48,38 @@ namespace Flightbud.Xamarin.Forms
             return true;
         }
 
-        private void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
-        {
-            List<MapItemBase> airportsInRange = airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers).Cast<MapItemBase>().ToList();
-            int newItems = 0;
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-            foreach (var airport in airportsInRange)
+        private async void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken ct = cancellationTokenSource.Token;
+
+            try
             {
-                if (!viewModel.MapItems.Exists(a => a.Name == airport.Name))
+                await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
+                List<MapItemBase> airportsInRange = await Task.Run(() => airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct);
+
+                foreach (var airport in airportsInRange)
                 {
-                    viewModel.MapItems.Add(airport);
-                    newItems++;
+                    if (!viewModel.MapItems.Exists(a => a.Name == airport.Name))
+                    {
+                        viewModel.MapItems.Add(airport);
+                    }
                 }
             }
-
-            if (newItems > 0)
+            catch (OperationCanceledException oce)
             {
-                viewModel.MapItemsUpdating = true;
+                // if you use your two eyes you would notice that nothing is being done in this catch block..
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
             }
         }
 

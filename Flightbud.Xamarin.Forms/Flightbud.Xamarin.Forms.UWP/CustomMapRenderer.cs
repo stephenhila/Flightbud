@@ -8,6 +8,7 @@ using System.Linq;
 using Windows.Devices.Geolocation;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls.Maps;
+using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.UWP;
 using Xamarin.Forms.Platform.UWP;
@@ -71,19 +72,15 @@ namespace Flightbud.Xamarin.Forms.UWP
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.OnElementPropertyChanged(sender, e);
-            Console.WriteLine(e.PropertyName);
+
             if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
                 (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
 
-                if (viewModel.MapItemsUpdating)
-                {
-                    if ((sender as AviationMap).AirportPins == null)
-                        return;
+                if ((sender as AviationMap).AirportPins == null)
+                    return;
 
-                    UpdatePins(sender as AviationMap);
-                    viewModel.MapItemsUpdating = false;
-                }
+                UpdatePins(sender as AviationMap);
             }
         }
 
@@ -91,16 +88,19 @@ namespace Flightbud.Xamarin.Forms.UWP
         {
             foreach (var pin in map.AirportPins)
             {
-                var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
-                var snPoint = new Geopoint(snPosition);
+                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
+                {
+                    var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
+                    var snPoint = new Geopoint(snPosition);
 
-                var mapIcon = new MapIcon();
-                mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/icon_pin_solidblue.png"));
-                mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
-                mapIcon.Location = snPoint;
-                mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
+                    var mapIcon = new MapIcon();
+                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/icon_pin_solidblue.png"));
+                    mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
+                    mapIcon.Location = snPoint;
+                    mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
 
-                nativeMap.MapElements.Add(mapIcon);
+                    Device.InvokeOnMainThreadAsync(() => nativeMap.MapElements.Add(mapIcon));
+                }
             }
         }
 

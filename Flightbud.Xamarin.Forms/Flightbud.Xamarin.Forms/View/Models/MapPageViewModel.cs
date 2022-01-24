@@ -35,8 +35,6 @@ namespace Flightbud.Xamarin.Forms.View.Models
 
         public List<MapItemBase> MapItems { get; set; }
 
-        public bool MapItemsUpdating { get; set; }
-
         public MapPageViewModel(AviationMap map, Location location, double mapSpanRadius)
         {
             Map = map;
@@ -44,7 +42,6 @@ namespace Flightbud.Xamarin.Forms.View.Models
             MapSpanRadius = mapSpanRadius;
 
             MapItems = new List<MapItemBase>();
-            MapItemsUpdating = false;
         }
 
         public void Update()

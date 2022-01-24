@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Facade
@@ -14,12 +15,11 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
     /// <summary>
     /// Facade to manage data from the Airports data file.
     /// </summary>
-    public class AirportData : IMapRegionData<Airport>
+    public class AirportData : IMapRegionData<MapItemBase>
     {
-        public List<Airport> Get(Position center, double radius)
+        public List<MapItemBase> Get(Position center, double radius)
         {
-            List<Airport> airports = null;
-            // this is a hard-coded field. yes it is. fite me!!!
+            List<MapItemBase> airports = null;
             var airportsCsvResourceId = Constants.AIRPORT_DATA_RESOURCE;
             var assembly = Assembly.GetExecutingAssembly();
             Stream stream = assembly.GetManifestResourceStream(airportsCsvResourceId);
@@ -34,10 +34,10 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                     {
                         csvReader.Read();
                         csvReader.ReadHeader();
-                        airports = new List<Airport>();
+                        airports = new List<MapItemBase>();
                         while (csvReader.Read())
                         {
-                            // this is a hard-coded field. yes it is. fite me again!!!
+                            // this is a hard-coded field. yes it is. fite me!!!
                             var latitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("latitude_deg"));
                             var longitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("longitude_deg"));
                             var airportType = csvReader.GetField<string>(csvReader.GetFieldIndex("type"));
