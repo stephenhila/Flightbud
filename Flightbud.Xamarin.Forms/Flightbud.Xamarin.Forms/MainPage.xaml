@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+<FlyoutPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Flightbud.Xamarin.Forms.MainPage" MasterBehavior="Popover">
-    <MasterDetailPage.Master>
+             x:Class="Flightbud.Xamarin.Forms.MainPage" FlyoutLayoutBehavior="Popover">
+    <FlyoutPage.Flyout>
         <ContentPage Title="Menu">
             <StackLayout>
                 <Image Source="{Binding IconApp}" />
@@ -25,10 +25,10 @@
                 </ListView>
             </StackLayout>
         </ContentPage>
-    </MasterDetailPage.Master>
-    <MasterDetailPage.Detail>
+    </FlyoutPage.Flyout>
+    <FlyoutPage.Detail>
         <NavigationPage>
             
         </NavigationPage>
-    </MasterDetailPage.Detail>
-</MasterDetailPage>
+    </FlyoutPage.Detail>
+</FlyoutPage>

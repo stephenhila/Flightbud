@@ -1,7 +1,9 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
-using Flightbud.Xamarin.Forms.DataModels;
-using Flightbud.Xamarin.Forms.ViewModels;
+using Flightbud.Xamarin.Forms.Data;
+using Flightbud.Xamarin.Forms.Data.Facade;
+using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -21,53 +24,75 @@ namespace Flightbud.Xamarin.Forms
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage
     {
-        MapPageViewModel viewModel = new MapPageViewModel(
-            new Map { IsShowingUser = true, MapType = MapType.Satellite}, 
-            null,
-            10/*KMs*/);
+        IMapRegionData<MapItemBase> airportData;
+
+        MapPageViewModel viewModel;
         public MapPage()
         {
             InitializeComponent();
+            viewModel = new MapPageViewModel(
+            this.AviationMap,
+            null,
+            10/*KMs*/);
             BindingContext = viewModel;
+
+            airportData = new AirportData();
+
+            //Device.StartTimer(TimeSpan.FromSeconds(15), CurrentLocationUpdate_Tick);
+            CurrentLocationUpdate_Tick();
         }
 
-        protected override async void OnAppearing()
+        private bool CurrentLocationUpdate_Tick()
         {
-            base.OnAppearing();
+            BeginCurrentLocationUpdate();
+            return true;
+        }
 
-            viewModel.CurrentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
-            viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
-            viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-            var airportsCsvResourceId = "Flightbud.Xamarin.Forms.Assets.world-airports.csv";
-            var assembly = Assembly.GetExecutingAssembly();
-            Stream stream = assembly.GetManifestResourceStream(airportsCsvResourceId);
+        private async void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken ct = cancellationTokenSource.Token;
 
-            using (var reader = new System.IO.StreamReader(stream))
+            try
             {
-                if (reader != null)
+                await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
+                List<MapItemBase> airportsInRange = await Task.Run(() => airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct);
+
+                foreach (var airport in airportsInRange)
                 {
-                    using (var csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ","}))
+                    if (!viewModel.MapItems.Exists(a => a.Name == airport.Name))
                     {
-                        csvReader.Read();
-                        csvReader.ReadHeader();
-                        while (csvReader.Read())
-                        {
-                            var latitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("latitude_deg"));
-                            var longitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("longitude_deg"));
-                            if (latitudeDegreeField < viewModel.MapCenter.Latitude + viewModel.MapSpan.LatitudeDegrees
-                                 && latitudeDegreeField > viewModel.MapCenter.Latitude - viewModel.MapSpan.LatitudeDegrees
-                                 && longitudeDegreeField < viewModel.MapCenter.Longitude + viewModel.MapSpan.LongitudeDegrees
-                                 && longitudeDegreeField > viewModel.MapCenter.Longitude - viewModel.MapSpan.LongitudeDegrees)
-                            {
-                                Airport airport = csvReader.GetRecord<Airport>();
-                                viewModel.Airports.Add(airport);
-                            }
-                        }
+                        viewModel.MapItems.Add(airport);
                     }
                 }
             }
-            viewModel.Update();
+            catch (OperationCanceledException oce)
+            {
+                // if you use your two eyes you would notice that nothing is being done in this catch block..
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+            }
+        }
+
+        private async void BeginCurrentLocationUpdate()
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                viewModel.CurrentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
+                viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
+                viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
+
+                viewModel.Map.MoveToRegion(viewModel.MapSpan);
+            });
         }
     }
 }
