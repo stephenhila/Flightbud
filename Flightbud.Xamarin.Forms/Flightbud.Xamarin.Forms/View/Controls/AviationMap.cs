@@ -1,12 +1,13 @@
 ﻿using Flightbud.Xamarin.Forms.Data;
 using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
 
-namespace Flightbud.Xamarin.Forms.View.Models
+namespace Flightbud.Xamarin.Forms.View.Controls
 {
     public class AviationMap : Map
     {

@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Flightbud.Xamarin.Forms.View.Models
 {
-    public class MapItemOverlayViewModel : ViewModelBase
+    public class AirportPinOverlayViewModel : ViewModelBase
     {
-        MapItemBase selectedMapItem;
-        public MapItemBase SelectedMapItem
+        Airport selectedAirport;
+        public Airport SelectedAirport
         {
-            get { return selectedMapItem; }
+            get { return selectedAirport; }
             set
             {
-                selectedMapItem = value;
+                selectedAirport = value;
                 OnPropertyChanged();
             }
         }

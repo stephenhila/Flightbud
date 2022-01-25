@@ -12,17 +12,12 @@ namespace Flightbud.Xamarin.Forms.UWP
     /// </summary>
     public sealed partial class AirportPinOverlay : UserControl
     {
-        public MapItemOverlayViewModel ViewModel { get; set; }
-        public AirportPinOverlay(MapItemOverlayViewModel viewModel)
+        public AirportPinOverlayViewModel ViewModel { get; set; }
+        public AirportPinOverlay(AirportPinOverlayViewModel viewModel)
         {
             this.InitializeComponent();
             ViewModel = viewModel;
             DataContext = ViewModel;
-        }
-
-        private async void OnInfoButtonTapped(object sender, TappedRoutedEventArgs e)
-        {
-            //await Launcher.LaunchUriAsync(new Uri(customPin.Url));
         }
     }
 }

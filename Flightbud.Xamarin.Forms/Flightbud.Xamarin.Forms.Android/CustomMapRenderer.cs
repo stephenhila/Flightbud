@@ -4,6 +4,7 @@ using Android.Gms.Maps.Model;
 using Android.Widget;
 using Flightbud.Xamarin.Forms.Data.Models;
 using Flightbud.Xamarin.Forms.Droid;
+using Flightbud.Xamarin.Forms.View.Controls;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.ComponentModel;
@@ -117,28 +118,16 @@ namespace Flightbud.Xamarin.Forms.Droid
                     throw new Exception("Custom pin not found");
                 }
 
-                if (mapItem.Name.Equals("Xamarin"))
+                if (mapItem is Airport)
                 {
-                    view = inflater.Inflate(Resource.Layout.XamarinMapInfoWindow, null);
-                }
-                else
-                {
-                    view = inflater.Inflate(Resource.Layout.MapInfoWindow, null);
-                }
+                    view = inflater.Inflate(Resource.Layout.AirportPinOverlay, null);
 
-                var infoTitle = view.FindViewById<TextView>(Resource.Id.InfoWindowTitle);
-                var infoSubtitle = view.FindViewById<TextView>(Resource.Id.InfoWindowSubtitle);
+                    view.FindViewById<TextView>(Resource.Id.AirportCode).Text = (mapItem as Airport).Code;
+                    view.FindViewById<TextView>(Resource.Id.AirportName).Text = (mapItem as Airport).Name;
+                    view.Alpha = 0.5f;
 
-                if (infoTitle != null)
-                {
-                    infoTitle.Text = marker.Title;
+                    return view;
                 }
-                if (infoSubtitle != null)
-                {
-                    infoSubtitle.Text = marker.Snippet;
-                }
-
-                return view;
             }
             return null;
         }

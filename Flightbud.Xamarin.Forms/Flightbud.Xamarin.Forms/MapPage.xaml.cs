@@ -1,6 +1,7 @@
 ﻿using Flightbud.Xamarin.Forms.Data;
 using Flightbud.Xamarin.Forms.Data.Facade;
 using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.View.Controls;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Flightbud.Xamarin.Forms
             viewModel = new MapPageViewModel(
             this.AviationMap,
             null,
-            10/*KMs*/);
+            Constants.LOCATION_INITIAL_SPAN_RADIUS);
             BindingContext = viewModel;
 
             airportData = new AirportData();
