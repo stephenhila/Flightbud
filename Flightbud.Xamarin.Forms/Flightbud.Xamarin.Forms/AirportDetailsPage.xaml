@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Flightbud.Xamarin.Forms.AirportDetailsPage">
+  <ContentPage.Content>
+        <StackLayout Margin="10,15,10,10">
+            <StackLayout Orientation="Horizontal">
+                <ImageButton Source="icon_back.png" 
+                             HorizontalOptions="StartAndExpand" 
+                             Clicked="BackButtonClicked"/>
+                <StackLayout Orientation="Vertical" 
+                             VerticalOptions="CenterAndExpand"
+                             HorizontalOptions="EndAndExpand">
+                    <Label StyleClass="MapItemDetailHeader"
+                           Text="{Binding SelectedAirport.Code}"/>
+                    <Label StyleClass="MapItemDetailHeader"
+                           Text="{Binding SelectedAirport.Name}"/>
+                </StackLayout>
+                <Image Source="icon_map_airport.png" 
+                       HorizontalOptions="End" />
+            </StackLayout>
+                <StackLayout Orientation="Vertical">
+                    <Label Text="Runways" 
+                           StyleClass="MapItemDetailHeader" />
+                    <ListView ItemsSource="{Binding SelectedAirport.Runways}" 
+                              VerticalScrollBarVisibility="Never"
+                              InputTransparent="False">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Grid InputTransparent="False">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Text="Runway" 
+                                               Grid.Row="0" Grid.Column="0"
+                                               StyleClass="MapItemDetailLabel" />
+                                        <Label Text="{Binding Headings}"
+                                               Grid.Row="0" Grid.Column="1"
+                                               StyleClass="MapItemDetailValue" />
+                                        <Label Text="Elevation" 
+                                               Grid.Row="1" Grid.Column="0"
+                                               StyleClass="MapItemDetailLabel" />
+                                        <Label Text="{Binding ElevationsInFt}" 
+                                               Grid.Row="1" Grid.Column="1"
+                                               StyleClass="MapItemDetailValue" />
+                                        <Label Text="Length" 
+                                               Grid.Row="0" Grid.Column="3"
+                                               StyleClass="MapItemDetailLabel" />
+                                        <Label Text="{Binding LengthInFt}" 
+                                               Grid.Row="0" Grid.Column="4"
+                                               StyleClass="MapItemDetailValue" />
+                                        <Label Text="Surface" 
+                                               Grid.Row="1" Grid.Column="3"
+                                               StyleClass="MapItemDetailLabel" />
+                                        <Label Text="{Binding Surface}" 
+                                               Grid.Row="1" Grid.Column="4"
+                                               StyleClass="MapItemDetailValue" />
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    
+                    <Label Text="Frequencies" 
+                           StyleClass="MapItemDetailHeader" />
+                    <ListView ItemsSource="{Binding SelectedAirport.Frequencies}"
+                              VerticalScrollBarVisibility="Never">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Grid InputTransparent="False">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="3*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Text="{Binding Type}" 
+                                               Grid.Row="0" Grid.Column="0"
+                                               StyleClass="MapItemDetailLabel" />
+                                        <Label Text="{Binding FrequencyInMhz}" 
+                                               Grid.Row="0" Grid.Column="1"
+                                               StyleClass="MapItemDetailLabel" />
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

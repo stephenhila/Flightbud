@@ -116,6 +116,7 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Assets\icon_back.png" />
     <Content Include="Assets\icon_map.png">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
@@ -124,6 +125,8 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Assets\icon_map_airport.png" />
+    <Content Include="Assets\icon_map_vor.png" />
     <Content Include="Assets\icon_pin_lightmagenta.png" />
     <Content Include="Assets\icon_pin_solidblue.png" />
     <Content Include="Assets\LargeTile.scale-100.png" />
@@ -183,9 +186,7 @@
       <Name>Flightbud.Xamarin.Forms</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModel\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -16,3 +16,31 @@
     height: 50;
     width: 50;
 }
+
+.MapItemDetailTitle {
+    color: white;
+    font: 800;
+    font-size: medium;
+    text-align: right;
+}
+
+.MapItemDetailHeader {
+    color: white;
+    font: 600;
+    font-size: medium;
+    text-align: left;
+}
+
+.MapItemDetailLabel {
+    color: white;
+    font: 500;
+    font-size: small;
+    text-align: left;
+}
+
+.MapItemDetailValue {
+    color: white;
+    font: 400;
+    font-size: small;
+    text-align: left;
+}

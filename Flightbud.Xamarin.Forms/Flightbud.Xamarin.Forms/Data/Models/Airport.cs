@@ -1,7 +1,9 @@
-﻿using Flightbud.Xamarin.Forms.View.Models;
+﻿using Flightbud.Xamarin.Forms.Data.Facade;
+using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
@@ -33,7 +35,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         }
 
         [CsvHelper.Configuration.Attributes.Name("id")]
-        public string Id { get; set; }
+        public double Id { get; set; }
         [CsvHelper.Configuration.Attributes.Name("ident")]
         public string Code { get; set; }
         [CsvHelper.Configuration.Attributes.Name("type")]
@@ -44,5 +46,41 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         public override double Latitude { get; set; }
         [CsvHelper.Configuration.Attributes.Name("longitude_deg")]
         public override double Longitude { get; set; }
+        [CsvHelper.Configuration.Attributes.Name("elevation_ft")]
+        public double? Elevation { get; set; }
+        [CsvHelper.Configuration.Attributes.Name("iso_country")]
+        public string Country { get; set; }
+        
+        RunwayData _runwayDataSource = new RunwayData();
+        List<Runway> _runways;
+
+        [CsvHelper.Configuration.Attributes.Ignore]
+        public List<Runway> Runways 
+        {
+            get
+            {
+                if (_runways == null)
+                {
+                    _runways = _runwayDataSource.Get(Id);
+                }
+                return _runways;
+            }
+        }
+
+        AirportFrequencyData _airportFrequencyDataSource = new AirportFrequencyData();
+        List<AirportFrequency> _frequencies;
+
+        [CsvHelper.Configuration.Attributes.Ignore]
+        public List<AirportFrequency> Frequencies
+        {
+            get
+            {
+                if (_frequencies == null)
+                {
+                    _frequencies = _airportFrequencyDataSource.Get(Id);
+                }
+                return _frequencies;
+            }
+        }
     }
 }

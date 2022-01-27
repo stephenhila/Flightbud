@@ -2,21 +2,22 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps" 
-             xmlns:models="clr-namespace:Flightbud.Xamarin.Forms.View.Models"
+             xmlns:controls="clr-namespace:Flightbud.Xamarin.Forms.View.Controls"
              x:Class="Flightbud.Xamarin.Forms.MapPage">
     <ContentPage.Content>
         <ContentView>
-            <models:AviationMap x:Name="AviationMap" 
+            <controls:AviationMap x:Name="AviationMap" 
                                 IsShowingUser="True"
                                 MapType="Satellite"
                                 ItemsSource="{Binding MapItems}"
-                                VisibleRegionChanged="VisibleRegionChangedEventHandler">
-                <models:AviationMap.ItemTemplate>
+                                VisibleRegionChanged="VisibleRegionChangedEventHandler"
+                                MapItemDetailsRequested="MapItemDetailsRequestedEventHandler">
+                <controls:AviationMap.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Position="{Binding Position}" />
                     </DataTemplate>
-                </models:AviationMap.ItemTemplate>
-            </models:AviationMap>
+                </controls:AviationMap.ItemTemplate>
+            </controls:AviationMap>
         </ContentView>
     </ContentPage.Content>
 </ContentPage>

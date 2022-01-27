@@ -1,14 +1,14 @@
 ﻿using Flightbud.Xamarin.Forms.Data.Models;
 using Flightbud.Xamarin.Forms.UWP;
+using Flightbud.Xamarin.Forms.View.Controls;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Windows.Devices.Geolocation;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
-using Xamarin.Forms;
 using Xamarin.Forms.Maps;
 using Xamarin.Forms.Maps.UWP;
 using Xamarin.Forms.Platform.UWP;
@@ -47,6 +47,11 @@ namespace Flightbud.Xamarin.Forms.UWP
                     if (viewModel == null)
                     {
                         viewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
+                    }
+
+                    if (airportPinOverlay == null)
+                    {
+                        airportPinOverlay = new AirportPinOverlay(new AirportPinOverlayViewModel(), viewModel);
                     }
                 }
 
@@ -107,32 +112,33 @@ namespace Flightbud.Xamarin.Forms.UWP
         private void OnMapElementClick(MapControl sender, MapElementClickEventArgs args)
         {
             var mapIcon = args.MapElements.FirstOrDefault(x => x is MapIcon) as MapIcon;
+            nativeMap.Children.Clear();
+
             if (mapIcon != null)
             {
                 nativeMap.Children.Remove(airportPinOverlay);
                 var mapItem = GetMapItem(mapIcon.Location.Position);
+
                 if (mapItem == null)
                 {
                     throw new Exception("Custom pin not found");
                 }
-
-                if (airportPinOverlay == null)
+                else if (mapItem == airportPinOverlay.ViewModel.SelectedAirport)
                 {
-                    MapItemOverlayViewModel overlayViewModel = new MapItemOverlayViewModel();
-                    overlayViewModel.SelectedMapItem = mapItem;
-                    airportPinOverlay = new AirportPinOverlay(overlayViewModel);
+                    airportPinOverlay.ViewModel.SelectedAirport = null;
+                    return;
                 }
-                else
+
+                if (mapItem is Airport)
                 {
-                    airportPinOverlay.ViewModel.SelectedMapItem = mapItem;
+                    airportPinOverlay.ViewModel.SelectedAirport = mapItem as Airport;
                 }
 
                 var snPosition = new BasicGeoposition { Latitude = mapItem.Position.Latitude, Longitude = mapItem.Position.Longitude };
                 var snPoint = new Geopoint(snPosition);
-
                 nativeMap.Children.Add(airportPinOverlay);
                 MapControl.SetLocation(airportPinOverlay, snPoint);
-                MapControl.SetNormalizedAnchorPoint(airportPinOverlay, new Windows.Foundation.Point(0.5, 0.75));
+                MapControl.SetNormalizedAnchorPoint(airportPinOverlay, new Windows.Foundation.Point(1, 0.75));
             }
         }
 
