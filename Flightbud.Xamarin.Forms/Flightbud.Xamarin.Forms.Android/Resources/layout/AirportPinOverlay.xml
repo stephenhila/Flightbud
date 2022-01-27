@@ -29,11 +29,11 @@
 				android:text="AirportName"
 				android:textColor="@android:color/black" />
 		</LinearLayout>
-			<ImageView
-				android:id="@+id/InfoWindowButton"
-				android:layout_gravity="right"
-				android:layout_height="match_parent"
-				android:layout_width="match_parent"
-				android:src="@drawable/icon_map_airport"/>
+		<ImageView
+			android:id="@+id/InfoWindowButton"
+			android:layout_gravity="right"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:src="@drawable/icon_map_airport"/>
 	</LinearLayout>
 </LinearLayout>

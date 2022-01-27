@@ -10,7 +10,8 @@
                                 IsShowingUser="True"
                                 MapType="Satellite"
                                 ItemsSource="{Binding MapItems}"
-                                VisibleRegionChanged="VisibleRegionChangedEventHandler">
+                                VisibleRegionChanged="VisibleRegionChangedEventHandler"
+                                MapItemDetailsRequested="MapItemDetailsRequestedEventHandler">
                 <controls:AviationMap.ItemTemplate>
                     <DataTemplate>
                         <maps:Pin Position="{Binding Position}" />

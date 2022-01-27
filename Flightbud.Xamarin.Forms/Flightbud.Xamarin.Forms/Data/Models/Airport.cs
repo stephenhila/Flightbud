@@ -50,9 +50,6 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         public double? Elevation { get; set; }
         [CsvHelper.Configuration.Attributes.Name("iso_country")]
         public string Country { get; set; }
-
-        [CsvHelper.Configuration.Attributes.Ignore]
-        public bool RunwaysLoading { get; set; } = false;
         
         RunwayData _runwayDataSource = new RunwayData();
         List<Runway> _runways;
@@ -65,7 +62,6 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                 if (_runways == null)
                 {
                     _runways = _runwayDataSource.Get(Id);
-                    RunwaysLoading = false;
                 }
                 return _runways;
             }

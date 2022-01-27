@@ -18,8 +18,8 @@ namespace Flightbud.Xamarin.Forms
     public partial class MapPage : ContentPage
     {
         IMapRegionData<MapItemBase> airportData;
-
         MapPageViewModel viewModel;
+        AirportDetailsPage airportDetailsPage;
         public MapPage()
         {
             InitializeComponent();
@@ -89,6 +89,19 @@ namespace Flightbud.Xamarin.Forms
 
                 viewModel.Map.MoveToRegion(viewModel.MapSpan);
             });
+        }
+
+        private async Task MapItemDetailsRequestedEventHandler(object sender, MapItemDetailsRequestedEventArgs e)
+        {
+            if (e.SelectedMapItem is Airport)
+            {
+                if (airportDetailsPage == null)
+                {
+                    airportDetailsPage = new AirportDetailsPage();
+                }
+                airportDetailsPage.ViewModel.SelectedAirport = e.SelectedMapItem as Airport;
+                await Navigation.PushModalAsync(airportDetailsPage);
+            }
         }
     }
 }

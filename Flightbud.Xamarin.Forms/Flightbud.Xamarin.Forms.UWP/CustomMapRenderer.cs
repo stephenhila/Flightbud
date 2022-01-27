@@ -22,7 +22,7 @@ namespace Flightbud.Xamarin.Forms.UWP
     public class CustomMapRenderer : MapRenderer
     {
         MapControl nativeMap;
-        AirportPinOverlay airportPinOverlay = new AirportPinOverlay(new AirportPinOverlayViewModel());
+        AirportPinOverlay airportPinOverlay;
         MapPageViewModel viewModel;
 
         protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
@@ -47,6 +47,11 @@ namespace Flightbud.Xamarin.Forms.UWP
                     if (viewModel == null)
                     {
                         viewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
+                    }
+
+                    if (airportPinOverlay == null)
+                    {
+                        airportPinOverlay = new AirportPinOverlay(new AirportPinOverlayViewModel(), viewModel);
                     }
                 }
 

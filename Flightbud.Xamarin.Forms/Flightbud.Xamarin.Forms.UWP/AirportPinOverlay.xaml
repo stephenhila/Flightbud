@@ -8,57 +8,20 @@
     d:DesignHeight="300"
     d:DesignWidth="400"
     FontSize="11">
-    <StackPanel Orientation="Vertical" Background="LightSlateGray" Opacity="0.75">
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical" Margin="10,15,10,10">
-                <TextBlock FontWeight="Bold" 
-                            Foreground="Black"
-                            Text="{Binding SelectedAirport.Code}"/>
-                <TextBlock FontWeight="Bold" 
-                            Foreground="Black"
-                            Text="{Binding SelectedAirport.Name}"/>
-            </StackPanel>
-            <Image Source="ms-appx:///Assets/icon_map_airport.png" />
+    <StackPanel Orientation="Horizontal"
+                Background="Gray"
+                Opacity="0.8">
+        <StackPanel Orientation="Vertical" Margin="10,15,10,10">
+            <TextBlock FontWeight="Bold" 
+                        Foreground="Black"
+                        Text="{Binding SelectedAirport.Code}"/>
+            <TextBlock FontWeight="Bold" 
+                        Foreground="Black"
+                        Text="{Binding SelectedAirport.Name}"/>
+            <HyperlinkButton Content="more info" 
+                             Foreground="DarkBlue"
+                             Click="OnMoreInfoClick" />
         </StackPanel>
-        <Grid Margin="10,15,10,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <ProgressRing IsActive="{Binding SelectedAirport.RunwaysLoading}" 
-                          Grid.Column="0" Grid.ColumnSpan="2"/>
-            <ListView ItemsSource="{Binding SelectedAirport.Runways}" 
-                      Grid.Column="0"
-                      FontWeight="Bold" 
-                      Foreground="Black" 
-                      Header="Runways">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Vertical">
-                                <TextBlock Text="{Binding Headings}" FontSize="11" />
-                                <TextBlock Text="{Binding Surface}" FontSize="11" />
-                            </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <ListView ItemsSource="{Binding SelectedAirport.Frequencies}" 
-                      Grid.Column="1"
-                      FontWeight="Bold" 
-                      Foreground="Black" 
-                      Header="Frequencies">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Description}" FontSize="10" />
-                                <TextBlock Text="{Binding Frequency}" FontSize="10" />
-                            </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Grid>
+        <Image Source="ms-appx:///Assets/icon_map_airport.png" />
     </StackPanel>
 </UserControl>

@@ -31,7 +31,16 @@ namespace Flightbud.Xamarin.Forms.View.Controls
             }
         }
 
+        public async Task OnMapItemDetailsRequested(MapItemDetailsRequestedEventArgs e)
+        {
+            if (MapItemDetailsRequested != null)
+            {
+                await MapItemDetailsRequested(this, e);
+            }
+        }
+
         public event VisibleRegionChangedEventHandler VisibleRegionChanged;
+        public event MapItemDetailsRequestedEventHandler MapItemDetailsRequested;
     }
 
 
@@ -39,5 +48,11 @@ namespace Flightbud.Xamarin.Forms.View.Controls
     {
         // just in-case we need more parameters for the event args.. never know..
     }
-    public delegate Task VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e);
+    public delegate Task VisibleRegionChangedEventHandler(object sender, VisibleRegionChangedEventArgs e);
+
+    public class MapItemDetailsRequestedEventArgs : EventArgs
+    {
+        public MapItemBase SelectedMapItem { get; set; }
+    }
+    public delegate Task MapItemDetailsRequestedEventHandler(object sender, MapItemDetailsRequestedEventArgs e);
 }

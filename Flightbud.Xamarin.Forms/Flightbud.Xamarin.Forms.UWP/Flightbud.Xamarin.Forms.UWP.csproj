@@ -116,6 +116,7 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Assets\icon_back.png" />
     <Content Include="Assets\icon_map.png">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>

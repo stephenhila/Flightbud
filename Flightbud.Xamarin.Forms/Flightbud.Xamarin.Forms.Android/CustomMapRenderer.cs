@@ -83,6 +83,7 @@ namespace Flightbud.Xamarin.Forms.Droid
         {
             base.OnMapReady(map);
 
+            NativeMap.InfoWindowClick += OnInfoWindowClick;
             NativeMap.SetInfoWindowAdapter(this);
         }
 
@@ -96,13 +97,15 @@ namespace Flightbud.Xamarin.Forms.Droid
             return marker;
         }
 
-        void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
+        async void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
         {
-            var customPin = GetMapItem(e.Marker);
-            if (customPin == null)
+            var mapItem = GetMapItem(e.Marker);
+            if (mapItem == null)
             {
-                throw new Exception("Custom pin not found");
+                throw new Exception("Map Item not found");
             }
+
+            await viewModel.Map.OnMapItemDetailsRequested(new MapItemDetailsRequestedEventArgs { SelectedMapItem = mapItem});
         }
 
         public Android.Views.View GetInfoContents(Marker marker)
@@ -124,7 +127,6 @@ namespace Flightbud.Xamarin.Forms.Droid
 
                     view.FindViewById<TextView>(Resource.Id.AirportCode).Text = (mapItem as Airport).Code;
                     view.FindViewById<TextView>(Resource.Id.AirportName).Text = (mapItem as Airport).Name;
-                    view.Alpha = 0.5f;
 
                     return view;
                 }
