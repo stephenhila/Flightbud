@@ -13,27 +13,27 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
         public List<AirportFrequency> Get(double airportId)
         {
             List<AirportFrequency> frequencies = null;
-            var airportsCsvResourceId = Constants.AIRPORT_FREQUENCY_DATA_RESOURCE;
-            var assembly = Assembly.GetExecutingAssembly();
-            Stream stream = assembly.GetManifestResourceStream(airportsCsvResourceId);
 
-            using (var reader = new System.IO.StreamReader(stream))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.AIRPORT_FREQUENCY_DATA_RESOURCE))
             {
-                if (reader != null)
+                using (var reader = new System.IO.StreamReader(stream))
                 {
-                    using (var csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "," }))
+                    if (reader != null)
                     {
-                        csvReader.Read();
-                        csvReader.ReadHeader();
-                        frequencies = new List<AirportFrequency>();
-                        while (csvReader.Read())
+                        using (var csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "," }))
                         {
-                            // this is a hard-coded field. yes it is. fite me!!!
-                            var airportRef = csvReader.GetField<double>(csvReader.GetFieldIndex("airport_ref"));
-                            if (airportId == airportRef)
+                            csvReader.Read();
+                            csvReader.ReadHeader();
+                            frequencies = new List<AirportFrequency>();
+                            while (csvReader.Read())
                             {
-                                AirportFrequency frequency = csvReader.GetRecord<AirportFrequency>();
-                                frequencies.Add(frequency);
+                                // this is a hard-coded field. yes it is. fite me!!!
+                                var airportRef = csvReader.GetField<double>(csvReader.GetFieldIndex("airport_ref"));
+                                if (airportId == airportRef)
+                                {
+                                    AirportFrequency frequency = csvReader.GetRecord<AirportFrequency>();
+                                    frequencies.Add(frequency);
+                                }
                             }
                         }
                     }

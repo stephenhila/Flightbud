@@ -90,8 +90,8 @@ namespace Flightbud.Xamarin.Forms.UWP
         {
             foreach (var mapItem in map.ItemsSource.OfType<MapItemBase>())
             {
-                //if (!map.Pins.Any(p => p.Position.Equals(mapItem.Position)))
-                //{
+                if (!nativeMap.MapElements.Any(e => (e is MapIcon) && (e as MapIcon).Location.Position.Latitude == mapItem.Latitude && (e as MapIcon).Location.Position.Longitude == mapItem.Longitude))
+                {
                     var snPosition = new BasicGeoposition { Latitude = mapItem.Position.Latitude, Longitude = mapItem.Position.Longitude };
                     var snPoint = new Geopoint(snPosition);
 
@@ -102,7 +102,7 @@ namespace Flightbud.Xamarin.Forms.UWP
                     mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
 
                     nativeMap.MapElements.Add(mapIcon);
-                //}
+                }
             }
         }
 

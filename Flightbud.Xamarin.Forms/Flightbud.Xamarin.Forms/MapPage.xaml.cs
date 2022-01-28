@@ -60,19 +60,28 @@ namespace Flightbud.Xamarin.Forms
 
             try
             {
-                await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
+                double currentRadius = viewModel.Map.VisibleRegion.Radius.Kilometers;
+                if (Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD < currentRadius)
+                    return;
+
+                Position currentPosition = viewModel.Map.VisibleRegion.Center;
                 viewModel.IsLoading = true;
                 List<MapItemBase> mapItemsInRange = new List<MapItemBase>();
+
+                await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
                 foreach (var dataSource in dataSources)
                 {
-                    mapItemsInRange.AddRange(await Task.Run(() => dataSource.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct));
+                    mapItemsInRange.AddRange(await Task.Run(() => dataSource.Get(currentPosition, currentRadius), ct));
                 }
-                
-                foreach (var mapItem in mapItemsInRange)
+
+                lock (viewModel.MapItems)
                 {
-                    if (!viewModel.MapItems.Exists(a => a.Name == mapItem.Name))
+                    foreach (var mapItem in mapItemsInRange)
                     {
-                        viewModel.MapItems.Add(mapItem);
+                        if (!viewModel.MapItems.Exists(a => a.Name == mapItem.Name))
+                        {
+                            viewModel.MapItems.Add(mapItem);
+                        }
                     }
                 }
             }
@@ -89,7 +98,7 @@ namespace Flightbud.Xamarin.Forms
             }
         }
 
-        private async void BeginCurrentLocationUpdate()
+        private void BeginCurrentLocationUpdate()
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
