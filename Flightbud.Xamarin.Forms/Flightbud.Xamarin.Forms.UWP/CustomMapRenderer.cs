@@ -30,15 +30,6 @@ namespace Flightbud.Xamarin.Forms.UWP
         {
             base.OnElementChanged(e);
 
-            if (e.OldElement != null)
-            {
-                nativeMap.MapElementClick -= OnMapElementClick;
-                nativeMap.Children.Clear();
-                activeOverlay = null;
-                mapPinOverlayViewModel = null;
-                nativeMap = null;
-            }
-
             if (e.NewElement != null)
             {
                 if (e.NewElement is AviationMap)
@@ -91,64 +82,27 @@ namespace Flightbud.Xamarin.Forms.UWP
             {
                 await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
 
-                if ((sender as AviationMap).AirportPins == null)
-                    return;
-
                 UpdatePins(sender as AviationMap);
             }
         }
 
         protected void UpdatePins(AviationMap map)
         {
-            foreach (var pin in map.AirportPins)
+            foreach (var mapItem in map.ItemsSource.OfType<MapItemBase>())
             {
-                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
-                {
-                    var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
+                //if (!map.Pins.Any(p => p.Position.Equals(mapItem.Position)))
+                //{
+                    var snPosition = new BasicGeoposition { Latitude = mapItem.Position.Latitude, Longitude = mapItem.Position.Longitude };
                     var snPoint = new Geopoint(snPosition);
 
                     var mapIcon = new MapIcon();
-                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{pin.Image}"));
+                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{mapItem.MapPin.Image}"));
                     mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
                     mapIcon.Location = snPoint;
                     mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
 
                     nativeMap.MapElements.Add(mapIcon);
-                }
-            }
-
-            foreach (var pin in map.VorPins)
-            {
-                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
-                {
-                    var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
-                    var snPoint = new Geopoint(snPosition);
-
-                    var mapIcon = new MapIcon();
-                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{pin.Image}"));
-                    mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
-                    mapIcon.Location = snPoint;
-                    mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
-
-                    nativeMap.MapElements.Add(mapIcon);
-                }
-            }
-
-            foreach (var pin in map.NdbPins)
-            {
-                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
-                {
-                    var snPosition = new BasicGeoposition { Latitude = pin.Position.Latitude, Longitude = pin.Position.Longitude };
-                    var snPoint = new Geopoint(snPosition);
-
-                    var mapIcon = new MapIcon();
-                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{pin.Image}"));
-                    mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
-                    mapIcon.Location = snPoint;
-                    mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
-
-                    nativeMap.MapElements.Add(mapIcon);
-                }
+                //}
             }
         }
 

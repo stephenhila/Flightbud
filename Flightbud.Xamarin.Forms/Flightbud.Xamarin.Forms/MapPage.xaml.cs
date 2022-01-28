@@ -61,6 +61,7 @@ namespace Flightbud.Xamarin.Forms
             try
             {
                 await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
+                viewModel.IsLoading = true;
                 List<MapItemBase> mapItemsInRange = new List<MapItemBase>();
                 foreach (var dataSource in dataSources)
                 {
@@ -84,6 +85,7 @@ namespace Flightbud.Xamarin.Forms
             }
             finally
             {
+                viewModel.IsLoading = false;
             }
         }
 

@@ -14,9 +14,9 @@ namespace Flightbud.Xamarin.Forms.Data.Models
     public class Airport : MapItemBase
     {
         [CsvHelper.Configuration.Attributes.Ignore]
-        AirportPin _pin;
+        BaseAviationPin _pin;
         [CsvHelper.Configuration.Attributes.Ignore]
-        public AirportPin MapPin 
+        public override BaseAviationPin MapPin 
         {
             get 
             {
@@ -24,7 +24,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                 {
                     _pin = new AirportPin 
                     {
-                        Address = Code,
+                        Address = Country,
                         Label = Code,
                         Name = Name,
                         Position = Position,
@@ -49,7 +49,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         [CsvHelper.Configuration.Attributes.Name("elevation_ft")]
         public double? Elevation { get; set; }
         [CsvHelper.Configuration.Attributes.Name("iso_country")]
-        public string Country { get; set; }
+        public override string Country { get; set; }
         
         RunwayData _runwayDataSource = new RunwayData();
         List<Runway> _runways;

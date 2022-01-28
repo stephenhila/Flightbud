@@ -36,6 +36,13 @@ namespace Flightbud.Xamarin.Forms.View.Models
 
         public List<MapItemBase> MapItems { get; set; }
 
+        bool _isLoading;
+        public bool IsLoading 
+        { 
+            get { return _isLoading; }
+            set { _isLoading = value; OnPropertyChanged(); }
+        }
+
         public MapPageViewModel(AviationMap map, Location location, double mapSpanRadius)
         {
             Map = map;
@@ -43,11 +50,7 @@ namespace Flightbud.Xamarin.Forms.View.Models
             MapSpanRadius = mapSpanRadius;
 
             MapItems = new List<MapItemBase>();
-        }
-
-        public void Update()
-        {
-            Map.MoveToRegion(MapSpan);
+            _isLoading = false;
         }
     }
 }

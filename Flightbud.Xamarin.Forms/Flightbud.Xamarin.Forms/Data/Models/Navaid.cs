@@ -8,17 +8,17 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         [CsvHelper.Configuration.Attributes.Ignore]
         BaseAviationPin _pin;
         [CsvHelper.Configuration.Attributes.Ignore]
-        public BaseAviationPin MapPin
+        public override BaseAviationPin MapPin
         {
             get
             {
                 if (_pin == null)
                 {
-                    if (Type.Contains("VOR"))
+                    if (Type.Contains("VOR") || Type.Contains("TACAN"))
                     {
                         _pin = new VorPin
                         {
-                            Address = Code,
+                            Address = Country,
                             Label = Code,
                             Name = Name,
                             Position = Position,
@@ -28,7 +28,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                     {
                         _pin = new NdbPin
                         {
-                            Address = Code,
+                            Address = Country,
                             Label = Code,
                             Name = Name,
                             Position = Position,
@@ -42,6 +42,8 @@ namespace Flightbud.Xamarin.Forms.Data.Models
 
         [CsvHelper.Configuration.Attributes.Name("name")]
         public override string Name { get; set; }
+        [CsvHelper.Configuration.Attributes.Name("name")]
+        public override string Country { get; set; }
         [CsvHelper.Configuration.Attributes.Name("latitude_deg")]
         public override double Latitude { get; set; }
         [CsvHelper.Configuration.Attributes.Name("longitude_deg")]
