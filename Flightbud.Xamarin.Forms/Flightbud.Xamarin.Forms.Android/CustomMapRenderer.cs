@@ -23,7 +23,7 @@ namespace Flightbud.Xamarin.Forms.Droid
     /// </summary>
     public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter
     {
-        MapPageViewModel viewModel;
+        MapPageViewModel mapPageViewModel;
 
         public CustomMapRenderer(Context context) : base(context)
         {
@@ -45,9 +45,9 @@ namespace Flightbud.Xamarin.Forms.Droid
                 {
                     var formsMap = (AviationMap)e.NewElement;
 
-                    if (viewModel == null)
+                    if (mapPageViewModel == null)
                     {
-                        viewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
+                        mapPageViewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
                     }
                 }
             }
@@ -61,7 +61,9 @@ namespace Flightbud.Xamarin.Forms.Droid
             {
                 await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
 
-                if ((sender as AviationMap).AirportPins == null)
+                if ((sender as AviationMap).AirportPins == null 
+                 && (sender as AviationMap).VorPins == null 
+                 && (sender as AviationMap).NdbPins == null)
                     return;
 
                 await UpdatePins(sender as AviationMap);
@@ -71,6 +73,22 @@ namespace Flightbud.Xamarin.Forms.Droid
         protected async Task UpdatePins(AviationMap map)
         {
             foreach (var pin in map.AirportPins)
+            {
+                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
+                {
+                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
+                }
+            }
+
+            foreach (var pin in map.VorPins)
+            {
+                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
+                {
+                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
+                }
+            }
+
+            foreach (var pin in map.NdbPins)
             {
                 if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
                 {
@@ -93,7 +111,12 @@ namespace Flightbud.Xamarin.Forms.Droid
             marker.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
             marker.SetTitle(pin.Label);
             marker.SetSnippet(pin.Address);
-            marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_pin_solidblue));
+            if (pin is AirportPin)
+                marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_pin_solidblue));
+            else if (pin is VorPin)
+                marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_map_vor));
+            else if (pin is NdbPin)
+                marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_map_ndb));
             return marker;
         }
 
@@ -105,7 +128,7 @@ namespace Flightbud.Xamarin.Forms.Droid
                 throw new Exception("Map Item not found");
             }
 
-            await viewModel.Map.OnMapItemDetailsRequested(new MapItemDetailsRequestedEventArgs { SelectedMapItem = mapItem});
+            await mapPageViewModel.Map.OnMapItemDetailsRequested(new MapItemDetailsRequestedEventArgs { SelectedMapItem = mapItem});
         }
 
         public Android.Views.View GetInfoContents(Marker marker)
@@ -130,6 +153,21 @@ namespace Flightbud.Xamarin.Forms.Droid
 
                     return view;
                 }
+                else if (mapItem is Navaid)
+                {
+                    view = inflater.Inflate(Resource.Layout.NavaidPinOverlay, null);
+
+                    view.FindViewById<TextView>(Resource.Id.Code).Text = (mapItem as Navaid).Code;
+                    view.FindViewById<TextView>(Resource.Id.Name).Text = (mapItem as Navaid).Name;
+                    view.FindViewById<TextView>(Resource.Id.Type).Text = (mapItem as Navaid).Type;
+                    view.FindViewById<TextView>(Resource.Id.Frequency).Text = (mapItem as Navaid).FrequencyWithUnits;
+                    if ((mapItem as Navaid).Type.Contains("VOR"))
+                        view.FindViewById<ImageView>(Resource.Id.InfoWindowButton).SetImageResource(Resource.Drawable.icon_map_vor);
+                    if ((mapItem as Navaid).Type.Contains("NDB"))
+                        view.FindViewById<ImageView>(Resource.Id.InfoWindowButton).SetImageResource(Resource.Drawable.icon_map_ndb);
+
+                    return view;
+                }
             }
             return null;
         }
@@ -142,7 +180,7 @@ namespace Flightbud.Xamarin.Forms.Droid
         MapItemBase GetMapItem(Marker annotation)
         {
             var position = new Position(annotation.Position.Latitude, annotation.Position.Longitude);
-            foreach (var item in viewModel.MapItems)
+            foreach (var item in mapPageViewModel.MapItems)
             {
                 if (item.Position == position)
                 {

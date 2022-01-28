@@ -15,6 +15,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         [CsvHelper.Configuration.Attributes.Name("frequency_mhz")]
         public double? Frequency { get; set; }
 
+        [CsvHelper.Configuration.Attributes.Ignore]
         public string FrequencyInMhz
         {
             get

@@ -18,6 +18,23 @@ namespace Flightbud.Xamarin.Forms.View.Controls
                 return ItemsSource?.OfType<Airport>()?.Select(a => a.MapPin).ToList();
             }
         }
+
+        public List<VorPin> VorPins
+        {
+            get
+            {
+                return ItemsSource?.OfType<Navaid>()?.Where(p => p.MapPin is VorPin).Select(a => a.MapPin as VorPin).ToList();
+            }
+        }
+
+        public List<NdbPin> NdbPins
+        {
+            get
+            {
+                return ItemsSource?.OfType<Navaid>()?.Where(p => p.MapPin is NdbPin).Select(a => a.MapPin as NdbPin).ToList();
+            }
+        }
+
         public AviationMap()
         {
 

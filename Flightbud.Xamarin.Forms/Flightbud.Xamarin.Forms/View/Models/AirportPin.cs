@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xamarin.Forms.Maps;
-
-namespace Flightbud.Xamarin.Forms.View.Models
+﻿namespace Flightbud.Xamarin.Forms.View.Models
 {
     public class AirportPin : BaseAviationPin
     {
