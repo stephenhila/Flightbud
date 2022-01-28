@@ -1,21 +1,14 @@
-﻿using Flightbud.Xamarin.Forms.Data.Models;
-using Flightbud.Xamarin.Forms.View.Models;
-using System;
-using Windows.System;
+﻿using Flightbud.Xamarin.Forms.View.Models;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Input;
 
 namespace Flightbud.Xamarin.Forms.UWP
 {
-    /// <summary>
-    /// Overlay to display airport details on UWP platform.
-    /// </summary>
-    public sealed partial class AirportPinOverlay : UserControl
+    public sealed partial class NavaidPinOverlay : UserControl
     {
         public MapPinOverlayViewModel ViewModel { get; set; }
         MapPageViewModel _mapViewModel;
 
-        public AirportPinOverlay(MapPinOverlayViewModel overlayViewModel, MapPageViewModel mapViewModel)
+        public NavaidPinOverlay(MapPinOverlayViewModel overlayViewModel, MapPageViewModel mapViewModel)
         {
             this.InitializeComponent();
             ViewModel = overlayViewModel;

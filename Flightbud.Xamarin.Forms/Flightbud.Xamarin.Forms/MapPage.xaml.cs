@@ -17,7 +17,7 @@ namespace Flightbud.Xamarin.Forms
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage
     {
-        IMapRegionData<MapItemBase> airportData;
+        List<IMapRegionData<MapItemBase>> dataSources;
         MapPageViewModel viewModel;
         AirportDetailsPage airportDetailsPage;
         public MapPage()
@@ -29,7 +29,11 @@ namespace Flightbud.Xamarin.Forms
             Constants.LOCATION_INITIAL_SPAN_RADIUS);
             BindingContext = viewModel;
 
-            airportData = new AirportData();
+            dataSources = new List<IMapRegionData<MapItemBase>>
+            {
+                new AirportData(),
+                new NavaidData()
+            };
 
             BeginCurrentLocationUpdate();
         }
@@ -57,13 +61,17 @@ namespace Flightbud.Xamarin.Forms
             try
             {
                 await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
-                IEnumerable<MapItemBase> airportsInRange = await Task.Run(() => airportData.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct);
-
-                foreach (var airport in airportsInRange)
+                List<MapItemBase> mapItemsInRange = new List<MapItemBase>();
+                foreach (var dataSource in dataSources)
                 {
-                    if (!viewModel.MapItems.Exists(a => a.Name == airport.Name))
+                    mapItemsInRange.AddRange(await Task.Run(() => dataSource.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers), ct));
+                }
+                
+                foreach (var mapItem in mapItemsInRange)
+                {
+                    if (!viewModel.MapItems.Exists(a => a.Name == mapItem.Name))
                     {
-                        viewModel.MapItems.Add(airport);
+                        viewModel.MapItems.Add(mapItem);
                     }
                 }
             }

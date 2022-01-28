@@ -100,6 +100,9 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NavaidPinOverlay.xaml.cs">
+      <DependentUpon>NavaidPinOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +129,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Assets\icon_map_airport.png" />
+    <Content Include="Assets\icon_map_ndb.png" />
     <Content Include="Assets\icon_map_vor.png" />
     <Content Include="Assets\icon_pin_lightmagenta.png" />
     <Content Include="Assets\icon_pin_solidblue.png" />
@@ -170,6 +174,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="NavaidPinOverlay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
