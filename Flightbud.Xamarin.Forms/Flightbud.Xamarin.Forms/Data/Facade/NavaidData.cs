@@ -27,26 +27,30 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
                     while (await reader.ReadAsync(ct))
                     {
-                        Navaid navaid = new Navaid
-                        {
-                            Code = reader.GetString(2),
-                            Name = reader.GetString(3),
-                            Type = reader.GetString(4),
-                            Latitude = reader.GetDouble(6),
-                            Longitude = reader.GetDouble(7),
-                        };
+                        double latitudeValue = reader.GetDouble(6);
+                        double longitudeValue = reader.GetDouble(7);
 
-                        string frequencyValue = reader.GetString(5);
-                        if (!string.IsNullOrEmpty(frequencyValue))
+                        if (latitudeValue < center.Latitude + (region.LatitudeDegrees / 2)
+                                && latitudeValue > center.Latitude - (region.LatitudeDegrees / 2)
+                                && longitudeValue < center.Longitude + (region.LongitudeDegrees / 2)
+                                && longitudeValue > center.Longitude - (region.LongitudeDegrees / 2))
                         {
-                            navaid.Frequency = double.Parse(frequencyValue);
-                        }
 
-                        if (navaid.Latitude < center.Latitude + (region.LatitudeDegrees / 2)
-                                && navaid.Latitude > center.Latitude - (region.LatitudeDegrees / 2)
-                                && navaid.Longitude < center.Longitude + (region.LongitudeDegrees / 2)
-                                && navaid.Longitude > center.Longitude - (region.LongitudeDegrees / 2))
-                        {
+                            Navaid navaid = new Navaid
+                            {
+                                Code = reader.GetString(2),
+                                Name = reader.GetString(3),
+                                Type = reader.GetString(4),
+                                Latitude = latitudeValue,
+                                Longitude = longitudeValue,
+                            };
+
+                            string frequencyValue = reader.GetString(5);
+                            if (!string.IsNullOrEmpty(frequencyValue))
+                            {
+                                navaid.Frequency = double.Parse(frequencyValue);
+                            }
+
                             navaids.Add(navaid);
                         }
                     }

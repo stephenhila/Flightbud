@@ -25,21 +25,23 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
                     while (await reader.ReadAsync(ct))
                     {
-                        AirportFrequency frequency = new AirportFrequency
+                        double airportIdValue = reader.GetDouble(1);
+                        
+                        if (airportId == airportIdValue)
                         {
-                            AirportId = reader.GetDouble(1),
-                            Type = reader.GetString(3),
-                            Description = reader.GetString(4),
-                        };
+                            AirportFrequency frequency = new AirportFrequency
+                            {
+                                AirportId = airportIdValue,
+                                Type = reader.GetString(3),
+                                Description = reader.GetString(4),
+                            };
 
-                        string frequencyValue = reader.GetString(5);
-                        if (!string.IsNullOrEmpty(frequencyValue))
-                        {
-                            frequency.Frequency = double.Parse(frequencyValue);
-                        }
+                            string frequencyValue = reader.GetString(5);
+                            if (!string.IsNullOrEmpty(frequencyValue))
+                            {
+                                frequency.Frequency = double.Parse(frequencyValue);
+                            }
 
-                        if (airportId == frequency.AirportId)
-                        {
                             frequencies.Add(frequency);
                         }
                     }

@@ -32,25 +32,28 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
                     while (await reader.ReadAsync(ct))
                     {
-                        Airport airport = new Airport
-                        {
-                            Id = reader.GetDouble(0),
-                            Code = reader.GetString(1),
-                            Type = reader.GetString(2),
-                            Name = reader.GetString(3),
-                            Latitude = reader.GetDouble(4),
-                            Longitude = reader.GetDouble(5),
-                            Country = reader.GetString(8),
-                        };
+                        string airportTypeValue = reader.GetString(2);
+                        double latitudeValue = reader.GetDouble(4);
+                        double longitudeValue = reader.GetDouble(5);
 
-                        if (airport.Latitude < center.Latitude + (region.LatitudeDegrees / 2)
-                             && airport.Latitude > center.Latitude - (region.LatitudeDegrees / 2)
-                             && airport.Longitude < center.Longitude + (region.LongitudeDegrees / 2)
-                             && airport.Longitude > center.Longitude - (region.LongitudeDegrees / 2)
-                             && (airport.Type == "small_airport"
-                              || airport.Type == "medium_airport"
-                              || airport.Type == "large_airport"))
+                        if (latitudeValue < center.Latitude + (region.LatitudeDegrees / 2)
+                             && latitudeValue > center.Latitude - (region.LatitudeDegrees / 2)
+                             && longitudeValue < center.Longitude + (region.LongitudeDegrees / 2)
+                             && longitudeValue > center.Longitude - (region.LongitudeDegrees / 2)
+                             && (airportTypeValue == "small_airport"
+                              || airportTypeValue == "medium_airport"
+                              || airportTypeValue == "large_airport"))
                         {
+                            Airport airport = new Airport
+                            {
+                                Id = reader.GetDouble(0),
+                                Code = reader.GetString(1),
+                                Type = airportTypeValue,
+                                Name = reader.GetString(3),
+                                Latitude = latitudeValue,
+                                Longitude = longitudeValue,
+                                Country = reader.GetString(8),
+                            };
                             airports.Add(airport);
                         }
                     }

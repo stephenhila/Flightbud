@@ -25,37 +25,39 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
                     while (await reader.ReadAsync(ct))
                     {
-                        Runway runway = new Runway
-                        {
-                            AirportId = reader.GetDouble(1),
-                            Surface = reader.GetString(5),
-                            HeadingLowEnd = reader.GetString(8),
-                            HeadingHighEnd = reader.GetString(14),
-                        };
+                        double airportIdValue = reader.GetDouble(1);
 
-                        string lengthValue = reader.GetString(3);
-                        if (!string.IsNullOrEmpty(lengthValue))
+                        if (airportId == airportIdValue)
                         {
-                            runway.Length = int.Parse(lengthValue);
-                        }
-                        string widthValue = reader.GetString(4);
-                        if (!string.IsNullOrEmpty(widthValue))
-                        {
-                            runway.Width = int.Parse(widthValue);
-                        }
-                        string elevationLowEndValue = reader.GetString(11);
-                        if (!string.IsNullOrEmpty(elevationLowEndValue))
-                        {
-                            runway.ElevationLowEnd = double.Parse(elevationLowEndValue);
-                        }
-                        string elevationHighEndValue = reader.GetString(17);
-                        if (!string.IsNullOrEmpty(elevationHighEndValue))
-                        {
-                            runway.ElevationHighEnd = double.Parse(elevationHighEndValue);
-                        }
+                            Runway runway = new Runway
+                            {
+                                AirportId = airportIdValue,
+                                Surface = reader.GetString(5),
+                                HeadingLowEnd = reader.GetString(8),
+                                HeadingHighEnd = reader.GetString(14),
+                            };
 
-                        if (airportId == runway.AirportId)
-                        {
+                            string lengthValue = reader.GetString(3);
+                            if (!string.IsNullOrEmpty(lengthValue))
+                            {
+                                runway.Length = int.Parse(lengthValue);
+                            }
+                            string widthValue = reader.GetString(4);
+                            if (!string.IsNullOrEmpty(widthValue))
+                            {
+                                runway.Width = int.Parse(widthValue);
+                            }
+                            string elevationLowEndValue = reader.GetString(11);
+                            if (!string.IsNullOrEmpty(elevationLowEndValue))
+                            {
+                                runway.ElevationLowEnd = double.Parse(elevationLowEndValue);
+                            }
+                            string elevationHighEndValue = reader.GetString(17);
+                            if (!string.IsNullOrEmpty(elevationHighEndValue))
+                            {
+                                runway.ElevationHighEnd = double.Parse(elevationHighEndValue);
+                            }
+
                             runways.Add(runway);
                         }
                     }
