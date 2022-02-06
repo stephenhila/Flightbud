@@ -34,6 +34,6 @@ namespace Flightbud.Xamarin.Forms.Data.Models
             }
         }
 
-        public abstract Task LoadDetails(CancellationToken ct);
+        public abstract Task LoadDetails(CancellationToken ct = default);
     }
 }

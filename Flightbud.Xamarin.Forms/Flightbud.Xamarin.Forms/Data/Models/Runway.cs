@@ -2,6 +2,9 @@
 {
     public class Runway
     {
+        [CsvHelper.Configuration.Attributes.Name("airport_ref")]
+        public double AirportId { get; set; }
+
         [CsvHelper.Configuration.Attributes.Name("le_ident")]
         public string HeadingLowEnd { get; set; }
         [CsvHelper.Configuration.Attributes.Name("he_ident")]

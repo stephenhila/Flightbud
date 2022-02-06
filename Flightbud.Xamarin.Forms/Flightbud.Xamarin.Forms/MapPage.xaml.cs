@@ -137,6 +137,8 @@ namespace Flightbud.Xamarin.Forms
                 {
                     airportDetailsPage = new AirportDetailsPage();
                 }
+                Airport selectedAirport = e.SelectedMapItem as Airport;
+                await selectedAirport.LoadDetails();
                 airportDetailsPage.ViewModel.SelectedAirport = e.SelectedMapItem as Airport;
                 await Navigation.PushModalAsync(airportDetailsPage);
             }

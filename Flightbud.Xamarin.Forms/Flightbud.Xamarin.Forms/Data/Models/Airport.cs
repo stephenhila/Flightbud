@@ -52,7 +52,6 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         [CsvHelper.Configuration.Attributes.Name("iso_country")]
         public override string Country { get; set; }
         
-        RunwayData _runwayDataSource = new RunwayData();
         List<Runway> _runways;
 
         [CsvHelper.Configuration.Attributes.Ignore]
@@ -60,10 +59,6 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         {
             get
             {
-                if (_runways == null)
-                {
-                    _runways = _runwayDataSource.Get(Id);
-                }
                 return _runways;
             }
         }
@@ -78,9 +73,10 @@ namespace Flightbud.Xamarin.Forms.Data.Models
             }
         }
 
-        public override async Task LoadDetails(CancellationToken ct)
+        public override async Task LoadDetails(CancellationToken ct = default)
         {
-            _frequencies = await (new AirportFrequencyCsvReaderDataSource()).Get(Id, ct);
+            _frequencies = await (new AirportFrequencySylvanDataSource()).Get(Id, ct);
+            _runways = await (new RunwaySylvanDataSource()).Get(Id, ct);
         }
     }
 }

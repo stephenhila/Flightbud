@@ -21,6 +21,6 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
         /// <param name="radius">The radius of the region to search, in kilometers.</param>
         /// <param name="ct">Cancellation Token for handling data retrieval cancellation scenarios.</param>
         /// <returns></returns>
-        Task<List<T>> Get(Position center, double radius, CancellationToken ct);
+        Task<List<T>> Get(Position center, double radius, CancellationToken ct = default);
     }
 }

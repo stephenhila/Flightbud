@@ -19,7 +19,6 @@ namespace Flightbud.Xamarin.Forms
             InitializeComponent();
             ViewModel = new AirportDetailsPageViewModel();
             BindingContext = ViewModel;
-            ViewModel.SelectedAirport = new Data.Models.Airport { Id = 5627, Code = "RJTT", Name = "Tokyo Haneda International Airport" };
         }
 
         private void BackButtonClicked(object sender, EventArgs e)

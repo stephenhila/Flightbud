@@ -13,7 +13,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 {
     public class NavaidDataSylvanDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct)
+        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
         {
             MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> navaids = null;
@@ -58,7 +58,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
     public class NavaidDataCsvReaderDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct)
+        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
         {
             MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> navaids = null;

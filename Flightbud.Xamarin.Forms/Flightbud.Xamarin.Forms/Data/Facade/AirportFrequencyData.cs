@@ -12,7 +12,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 {
     public class AirportFrequencySylvanDataSource : IAirportDetailsData<AirportFrequency>
     {
-        public async Task<List<AirportFrequency>> Get(double airportId, CancellationToken ct)
+        public async Task<List<AirportFrequency>> Get(double airportId, CancellationToken ct = default)
         {
             List<AirportFrequency> frequencies = null;
 
@@ -51,7 +51,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
     public class AirportFrequencyCsvReaderDataSource : IAirportDetailsData<AirportFrequency>
     {
-        public async Task<List<AirportFrequency>> Get(double airportId, CancellationToken ct)
+        public async Task<List<AirportFrequency>> Get(double airportId, CancellationToken ct = default)
         {
             List<AirportFrequency> frequencies = null;
 

@@ -16,6 +16,6 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
         /// <param name="airportId">The unique identifier number of the airport (id field).</param>
         /// <param name="ct">Cancellation Token for handling data retrieval cancellation scenarios.</param>
         /// <returns></returns>
-        Task<List<T>> Get(double airportId, CancellationToken ct);
+        Task<List<T>> Get(double airportId, CancellationToken ct = default);
     }
 }

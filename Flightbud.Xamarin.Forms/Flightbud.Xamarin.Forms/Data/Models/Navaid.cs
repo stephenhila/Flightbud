@@ -82,7 +82,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
             }
         }
 
-        public override async Task LoadDetails(CancellationToken ct)
+        public override async Task LoadDetails(CancellationToken ct = default)
         {
             throw new NotImplementedException();
         }

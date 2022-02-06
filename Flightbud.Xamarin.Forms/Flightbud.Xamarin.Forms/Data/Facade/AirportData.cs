@@ -18,7 +18,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
     // TODO: Implement AirportData using Sylvan CSV Reader
     public class AirportDataSylvanDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct)
+        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
         {
             MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> airports = null;
@@ -66,7 +66,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
     /// </summary>
     public class AirportDataCsvReaderDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct)
+        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
         {
             MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> airports = null;
