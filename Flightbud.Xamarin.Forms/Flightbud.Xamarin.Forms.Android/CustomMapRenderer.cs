@@ -70,12 +70,12 @@ namespace Flightbud.Xamarin.Forms.Droid
 
         protected async Task UpdatePins(AviationMap map)
         {
-            foreach (var mapItem in map.ItemsSource.OfType<MapItemBase>())
+            var currentMapItems = mapPageViewModel.MapItems.ToList();
+            var newMapItems = currentMapItems.Where(item => !map.Pins.Any(pin => pin.Position.Equals(item.Position)));
+
+            foreach (var newItem in newMapItems)
             {
-                if (!map.Pins.Any(p => p.Position.Equals(mapItem.Position)))
-                {
-                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(mapItem.MapPin));
-                }
+                await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(newItem.MapPin));
             }
         }
 

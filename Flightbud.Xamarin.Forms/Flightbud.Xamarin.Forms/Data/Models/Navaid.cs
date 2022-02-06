@@ -1,5 +1,7 @@
 ﻿using Flightbud.Xamarin.Forms.View.Models;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
 {
@@ -78,6 +80,11 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                     return Constants.NO_DATA_SUPPORT;
                 }
             }
+        }
+
+        public override async Task LoadDetails(CancellationToken ct)
+        {
+            throw new NotImplementedException();
         }
     }
 }

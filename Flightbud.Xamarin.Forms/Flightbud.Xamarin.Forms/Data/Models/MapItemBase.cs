@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
@@ -31,5 +33,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                 return _position;
             }
         }
+
+        public abstract Task LoadDetails(CancellationToken ct);
     }
 }

@@ -6,6 +6,9 @@ namespace Flightbud.Xamarin.Forms.Data.Models
 {
     public class AirportFrequency
     {
+        [CsvHelper.Configuration.Attributes.Name("airport_ref")]
+        public double AirportId { get; set; }
+
         [CsvHelper.Configuration.Attributes.Name("type")]
         public string Type { get; set; }
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
@@ -67,20 +68,19 @@ namespace Flightbud.Xamarin.Forms.Data.Models
             }
         }
 
-        AirportFrequencyData _airportFrequencyDataSource = new AirportFrequencyData();
         List<AirportFrequency> _frequencies;
-
         [CsvHelper.Configuration.Attributes.Ignore]
         public List<AirportFrequency> Frequencies
         {
             get
             {
-                if (_frequencies == null)
-                {
-                    _frequencies = _airportFrequencyDataSource.Get(Id);
-                }
                 return _frequencies;
             }
+        }
+
+        public override async Task LoadDetails(CancellationToken ct)
+        {
+            _frequencies = await (new AirportFrequencyCsvReaderDataSource()).Get(Id, ct);
         }
     }
 }

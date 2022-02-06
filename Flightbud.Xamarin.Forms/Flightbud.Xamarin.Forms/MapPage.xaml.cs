@@ -5,6 +5,7 @@ using Flightbud.Xamarin.Forms.View.Controls;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -20,22 +21,22 @@ namespace Flightbud.Xamarin.Forms
         List<IMapRegionData<MapItemBase>> dataSources;
         MapPageViewModel viewModel;
         AirportDetailsPage airportDetailsPage;
+
+
         public MapPage()
         {
             InitializeComponent();
-            viewModel = new MapPageViewModel(
-            this.AviationMap,
-            null,
-            Constants.LOCATION_INITIAL_SPAN_RADIUS);
+            viewModel = new MapPageViewModel(this.AviationMap);
+            viewModel.MapItemsSearchFrequency = Constants.MAP_ITEMS_SEARCH_FREQUENCY;
             BindingContext = viewModel;
 
             dataSources = new List<IMapRegionData<MapItemBase>>
             {
-                new AirportData(),
-                new NavaidData()
+                new AirportDataSylvanDataSource(),
+                new NavaidDataSylvanDataSource()
             };
 
-            BeginCurrentLocationUpdate();
+            Device.StartTimer(TimeSpan.FromMilliseconds(Constants.LOCATION_UPDATE_FREQUENCY_MILLISECONDS), () => BeginCurrentLocationUpdate());
         }
 
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -51,38 +52,46 @@ namespace Flightbud.Xamarin.Forms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async Task VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
+        private async void VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
         {
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
-            cancellationTokenSource = new CancellationTokenSource();
             CancellationToken ct = cancellationTokenSource.Token;
 
             try
             {
+                viewModel.IsMapPanning = true;
+                viewModel.IsLoading = true;
+
                 double currentRadius = viewModel.Map.VisibleRegion.Radius.Kilometers;
                 if (Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD < currentRadius)
                     return;
 
                 Position currentPosition = viewModel.Map.VisibleRegion.Center;
                 viewModel.IsLoading = true;
-                List<MapItemBase> mapItemsInRange = new List<MapItemBase>();
 
-                await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS, ct);
-                foreach (var dataSource in dataSources)
-                {
-                    mapItemsInRange.AddRange(await Task.Run(() => dataSource.Get(currentPosition, currentRadius), ct));
-                }
+                viewModel.LastMapPanned = DateTime.UtcNow;
 
-                lock (viewModel.MapItems)
+                IEnumerable<Task<List<MapItemBase>>> mapDataTasksQuery =
+                from dataSource in dataSources
+                select GetMapData(dataSource, ct);
+
+                List<Task<List<MapItemBase>>> listOfTasks = mapDataTasksQuery.ToList();
+
+                while (listOfTasks.Any())
                 {
+                    Task<List<MapItemBase>> finishedTask = await Task.WhenAny(listOfTasks);
+                    listOfTasks.Remove(finishedTask);
+                    var mapItemsInRange = await finishedTask;
                     foreach (var mapItem in mapItemsInRange)
                     {
-                        if (!viewModel.MapItems.Exists(a => a.Name == mapItem.Name))
+                        lock (viewModel.MapItems)
                         {
-                            viewModel.MapItems.Add(mapItem);
+                            if (!viewModel.MapItems.Exists(a => a.Name == mapItem.Name))
+                            {
+                                viewModel.MapItems.Add(mapItem);
+                            }
                         }
                     }
+                    await Task.Delay(Constants.LOCATION_UPDATE_DELAY_MILLISECONDS);
                 }
             }
             catch (OperationCanceledException oce)
@@ -94,20 +103,30 @@ namespace Flightbud.Xamarin.Forms
             }
             finally
             {
+                viewModel.IsMapPanning = false;
                 viewModel.IsLoading = false;
             }
         }
 
-        private void BeginCurrentLocationUpdate()
+        private async Task<List<MapItemBase>> GetMapData(IMapRegionData<MapItemBase> dataSource, CancellationToken ct)
+        {
+            return await dataSource.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers, ct);
+        }
+
+        private bool BeginCurrentLocationUpdate()
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                viewModel.CurrentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
-                viewModel.MapCenter = new Position(viewModel.CurrentLocation.Latitude, viewModel.CurrentLocation.Longitude);
-                viewModel.MapSpan = MapSpan.FromCenterAndRadius(viewModel.MapCenter, Distance.FromKilometers(viewModel.MapSpanRadius));
+                var currentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
+                viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(Constants.LOCATION_INITIAL_SPAN_RADIUS));
 
-                viewModel.Map.MoveToRegion(viewModel.MapSpan);
+                if (viewModel.LastMapPanned.AddMilliseconds(Constants.LOCATION_UPDATE_RESUME_MILLISECONDS) > DateTime.UtcNow)
+                {
+                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                }
             });
+
+            return false;
         }
 
         private async Task MapItemDetailsRequestedEventHandler(object sender, MapItemDetailsRequestedEventArgs e)

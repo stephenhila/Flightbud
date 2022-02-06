@@ -5,12 +5,53 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Flightbud.Xamarin.Forms.Data.Facade
 {
-    public class AirportFrequencyData
+    public class AirportFrequencySylvanDataSource : IAirportDetailsData<AirportFrequency>
     {
-        public List<AirportFrequency> Get(double airportId)
+        public async Task<List<AirportFrequency>> Get(double airportId, CancellationToken ct)
+        {
+            List<AirportFrequency> frequencies = null;
+
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.AIRPORT_FREQUENCY_DATA_RESOURCE))
+            {
+                using (var streamReader = new System.IO.StreamReader(stream))
+                {
+                    var reader = await Sylvan.Data.Csv.CsvDataReader.CreateAsync(streamReader);
+                    frequencies = new List<AirportFrequency>();
+
+                    while (await reader.ReadAsync(ct))
+                    {
+                        AirportFrequency frequency = new AirportFrequency
+                        {
+                            AirportId = reader.GetDouble(1),
+                            Type = reader.GetString(3),
+                            Description = reader.GetString(4),
+                        };
+
+                        string frequencyValue = reader.GetString(5);
+                        if (!string.IsNullOrEmpty(frequencyValue))
+                        {
+                            frequency.Frequency = double.Parse(frequencyValue);
+                        }
+
+                        if (airportId == frequency.AirportId)
+                        {
+                            frequencies.Add(frequency);
+                        }
+                    }
+                }
+            }
+            return frequencies;
+        }
+    }
+
+    public class AirportFrequencyCsvReaderDataSource : IAirportDetailsData<AirportFrequency>
+    {
+        public async Task<List<AirportFrequency>> Get(double airportId, CancellationToken ct)
         {
             List<AirportFrequency> frequencies = null;
 
@@ -25,7 +66,7 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                             csvReader.Read();
                             csvReader.ReadHeader();
                             frequencies = new List<AirportFrequency>();
-                            while (csvReader.Read())
+                            while (await csvReader.ReadAsync())
                             {
                                 // this is a hard-coded field. yes it is. fite me!!!
                                 var airportRef = csvReader.GetField<double>(csvReader.GetFieldIndex("airport_ref"));

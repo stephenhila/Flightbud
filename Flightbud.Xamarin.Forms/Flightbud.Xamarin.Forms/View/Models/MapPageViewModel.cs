@@ -16,23 +16,10 @@ namespace Flightbud.Xamarin.Forms.View.Models
     public class MapPageViewModel : ViewModelBase
     {
         public AviationMap Map { get; set; }
-        public MapSpan MapSpan { get; set; }
-        public Position MapCenter { get; set; }
-        public double MapSpanRadius { get; set; }
 
-        Location _currentLocation;
-        public Location CurrentLocation
-        { 
-            get
-            {
-                return _currentLocation;
-            }
-            set
-            {
-                _currentLocation = value;
-                OnPropertyChanged();
-            }
-        }
+        public double MapItemsSearchFrequency { get; set; }
+
+        public MapSpan CurrentGeolocation { get; set; }
 
         public List<MapItemBase> MapItems { get; set; }
 
@@ -43,13 +30,34 @@ namespace Flightbud.Xamarin.Forms.View.Models
             set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        public MapPageViewModel(AviationMap map, Location location, double mapSpanRadius)
+        bool _isAutoFollow = true;
+        public bool IsAutoFollow
+        {
+            get { return _isAutoFollow; }
+            set { _isAutoFollow = value; OnPropertyChanged(); }
+        }
+
+        bool _isMapPanning = false;
+        public bool IsMapPanning
+        {
+            get { return _isMapPanning; }
+            set { _isMapPanning = value; OnPropertyChanged(); }
+        }
+
+        DateTime _lastMapPanned;
+        public DateTime LastMapPanned
+        { 
+            get { return _lastMapPanned; }
+            set { _lastMapPanned = value; OnPropertyChanged(); }
+        }
+
+        public MapPageViewModel(AviationMap map)
         {
             Map = map;
-            CurrentLocation = location;
-            MapSpanRadius = mapSpanRadius;
 
             MapItems = new List<MapItemBase>();
+            LastMapPanned = DateTime.UtcNow;
+            _isMapPanning = false;
             _isLoading = false;
         }
     }
