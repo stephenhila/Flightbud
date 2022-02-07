@@ -28,7 +28,6 @@
                                    Scale="0.33"
                                    HorizontalOptions="StartAndExpand"
                                    Color="LightCyan" />
-                <Label Text="{Binding LastMapPanned}" />
             </AbsoluteLayout>
         </ContentView>
     </ContentPage.Content>

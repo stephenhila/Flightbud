@@ -40,19 +40,11 @@ namespace Flightbud.Xamarin.Forms.View.Models
             set { _isMapPanning = value; OnPropertyChanged(); }
         }
 
-        DateTime _lastMapPanned;
-        public DateTime LastMapPanned
-        { 
-            get { return _lastMapPanned; }
-            set { _lastMapPanned = value; OnPropertyChanged(); }
-        }
-
         public MapPageViewModel(AviationMap map)
         {
             Map = map;
 
             MapItems = new List<MapItemBase>();
-            LastMapPanned = DateTime.UtcNow;
             _isMapPanning = false;
             _isLoading = false;
         }

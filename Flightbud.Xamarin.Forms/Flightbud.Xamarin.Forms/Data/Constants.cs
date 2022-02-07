@@ -20,6 +20,6 @@
         public const int LOCATION_UPDATE_DELAY_MILLISECONDS = 750;
         public const int LOCATION_UPDATE_FREQUENCY_MILLISECONDS = 1000;
         public const int LOCATION_UPDATE_RESUME_MILLISECONDS = 10000;
-        public const int MAP_ITEMS_SEARCH_FREQUENCY = 3000;
+        public const int MAP_ITEMS_SEARCH_FREQUENCY = 2500;
     }
 }

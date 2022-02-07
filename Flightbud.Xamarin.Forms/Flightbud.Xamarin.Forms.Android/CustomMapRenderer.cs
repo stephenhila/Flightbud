@@ -72,9 +72,14 @@ namespace Flightbud.Xamarin.Forms.Droid
         {
             lock (mapPageViewModel.MapItems)
             {
-                foreach (var newItem in mapPageViewModel.MapItems.Where(item => !map.Pins.Any(pin => pin.Position.Equals(item.Position))))
+                foreach (var mapItem in mapPageViewModel.MapItems)
                 {
-                    Device.InvokeOnMainThreadAsync(() => map.Pins.Add(newItem.MapPin));
+                    if (!(map.Pins.Any(pin => 
+                           pin.Position.Latitude == mapItem.Position.Latitude 
+                        && pin.Position.Longitude == mapItem.Position.Longitude)))
+                    {
+                        Device.InvokeOnMainThreadAsync(() => map.Pins.Add(mapItem.MapPin));
+                    }
                 }
             }
         }

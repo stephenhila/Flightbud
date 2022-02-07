@@ -68,8 +68,6 @@ namespace Flightbud.Xamarin.Forms
                 Position currentPosition = viewModel.Map.VisibleRegion.Center;
                 viewModel.IsLoading = true;
 
-                viewModel.LastMapPanned = DateTime.UtcNow;
-
                 IEnumerable<Task<List<MapItemBase>>> mapDataTasksQuery =
                 from dataSource in dataSources
                 select GetMapData(dataSource, ct);
@@ -119,11 +117,7 @@ namespace Flightbud.Xamarin.Forms
             {
                 var currentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
                 viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(Constants.LOCATION_INITIAL_SPAN_RADIUS));
-
-                if (viewModel.LastMapPanned.AddMilliseconds(Constants.LOCATION_UPDATE_RESUME_MILLISECONDS) > DateTime.UtcNow)
-                {
-                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
-                }
+                viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
             });
 
             return false;
