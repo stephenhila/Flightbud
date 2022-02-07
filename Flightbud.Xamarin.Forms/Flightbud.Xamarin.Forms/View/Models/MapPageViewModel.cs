@@ -2,11 +2,7 @@
 using Flightbud.Xamarin.Forms.View.Controls;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xamarin.Essentials;
 using Xamarin.Forms.Maps;
-using Map = Xamarin.Forms.Maps.Map;
 
 namespace Flightbud.Xamarin.Forms.View.Models
 {

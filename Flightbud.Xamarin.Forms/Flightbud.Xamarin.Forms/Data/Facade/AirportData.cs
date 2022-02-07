@@ -1,14 +1,9 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Flightbud.Xamarin.Forms.Data.Models;
-using Sylvan.Data;
-using Sylvan.Data.Csv;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
@@ -18,9 +13,8 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
     // TODO: Implement AirportData using Sylvan CSV Reader
     public class AirportDataSylvanDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
+        public async Task<List<MapItemBase>> Get(MapSpan visibleMapSpan, CancellationToken ct = default)
         {
-            MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> airports = null;
 
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.AIRPORT_DATA_RESOURCE))
@@ -36,10 +30,10 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                         double latitudeValue = reader.GetDouble(4);
                         double longitudeValue = reader.GetDouble(5);
 
-                        if (latitudeValue < center.Latitude + (region.LatitudeDegrees / 2)
-                             && latitudeValue > center.Latitude - (region.LatitudeDegrees / 2)
-                             && longitudeValue < center.Longitude + (region.LongitudeDegrees / 2)
-                             && longitudeValue > center.Longitude - (region.LongitudeDegrees / 2)
+                        if (latitudeValue < visibleMapSpan.Center.Latitude + (visibleMapSpan.LatitudeDegrees / 2)
+                             && latitudeValue > visibleMapSpan.Center.Latitude - (visibleMapSpan.LatitudeDegrees / 2)
+                             && longitudeValue < visibleMapSpan.Center.Longitude + (visibleMapSpan.LongitudeDegrees / 2)
+                             && longitudeValue > visibleMapSpan.Center.Longitude - (visibleMapSpan.LongitudeDegrees / 2)
                              && (airportTypeValue == "small_airport"
                               || airportTypeValue == "medium_airport"
                               || airportTypeValue == "large_airport"))
@@ -69,9 +63,8 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
     /// </summary>
     public class AirportDataCsvReaderDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
+        public async Task<List<MapItemBase>> Get(MapSpan visibleMapSpan, CancellationToken ct = default)
         {
-            MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> airports = null;
 
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.AIRPORT_DATA_RESOURCE))
@@ -89,10 +82,10 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                             {
                                 Airport airport = csvReader.GetRecord<Airport>();
 
-                                if (airport.Latitude < center.Latitude + (region.LatitudeDegrees / 2)
-                                     && airport.Latitude > center.Latitude - (region.LatitudeDegrees / 2)
-                                     && airport.Longitude < center.Longitude + (region.LongitudeDegrees / 2)
-                                     && airport.Longitude > center.Longitude - (region.LongitudeDegrees / 2)
+                                if (airport.Latitude < visibleMapSpan.Center.Latitude + (visibleMapSpan.LatitudeDegrees / 2)
+                                     && airport.Latitude > visibleMapSpan.Center.Latitude - (visibleMapSpan.LatitudeDegrees / 2)
+                                     && airport.Longitude < visibleMapSpan.Center.Longitude + (visibleMapSpan.LongitudeDegrees / 2)
+                                     && airport.Longitude > visibleMapSpan.Center.Longitude - (visibleMapSpan.LongitudeDegrees / 2)
                                      && (airport.Type == "small_airport"
                                       || airport.Type == "medium_airport"
                                       || airport.Type == "large_airport"))

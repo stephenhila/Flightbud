@@ -3,7 +3,6 @@ using CsvHelper.Configuration;
 using Flightbud.Xamarin.Forms.Data.Models;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,9 +12,8 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 {
     public class NavaidDataSylvanDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
+        public async Task<List<MapItemBase>> Get(MapSpan visibleMapSpan, CancellationToken ct = default)
         {
-            MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> navaids = null;
 
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.NAVAID_DATA_RESOURCE))
@@ -30,10 +28,10 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                         double latitudeValue = reader.GetDouble(6);
                         double longitudeValue = reader.GetDouble(7);
 
-                        if (latitudeValue < center.Latitude + (region.LatitudeDegrees / 2)
-                                && latitudeValue > center.Latitude - (region.LatitudeDegrees / 2)
-                                && longitudeValue < center.Longitude + (region.LongitudeDegrees / 2)
-                                && longitudeValue > center.Longitude - (region.LongitudeDegrees / 2))
+                        if (latitudeValue < visibleMapSpan.Center.Latitude + (visibleMapSpan.LatitudeDegrees / 2)
+                                && latitudeValue > visibleMapSpan.Center.Latitude - (visibleMapSpan.LatitudeDegrees / 2)
+                                && longitudeValue < visibleMapSpan.Center.Longitude + (visibleMapSpan.LongitudeDegrees / 2)
+                                && longitudeValue > visibleMapSpan.Center.Longitude - (visibleMapSpan.LongitudeDegrees / 2))
                         {
 
                             Navaid navaid = new Navaid
@@ -62,9 +60,8 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 
     public class NavaidDataCsvReaderDataSource : IMapRegionData<MapItemBase>
     {
-        public async Task<List<MapItemBase>> Get(Position center, double radius, CancellationToken ct = default)
+        public async Task<List<MapItemBase>> Get(MapSpan visibleMapSpan, CancellationToken ct = default)
         {
-            MapSpan region = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(radius));
             List<MapItemBase> navaids = null;
 
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.NAVAID_DATA_RESOURCE))
@@ -84,10 +81,10 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                                 var latitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("latitude_deg"));
                                 var longitudeDegreeField = csvReader.GetField<double>(csvReader.GetFieldIndex("longitude_deg"));
                                 var navaidType = csvReader.GetField<string>(csvReader.GetFieldIndex("type"));
-                                if (latitudeDegreeField < center.Latitude + (region.LatitudeDegrees / 2)
-                                     && latitudeDegreeField > center.Latitude - (region.LatitudeDegrees / 2)
-                                     && longitudeDegreeField < center.Longitude + (region.LongitudeDegrees / 2)
-                                     && longitudeDegreeField > center.Longitude - (region.LongitudeDegrees / 2))
+                                if (latitudeDegreeField < visibleMapSpan.Center.Latitude + (visibleMapSpan.LatitudeDegrees / 2)
+                                     && latitudeDegreeField > visibleMapSpan.Center.Latitude - (visibleMapSpan.LatitudeDegrees / 2)
+                                     && longitudeDegreeField < visibleMapSpan.Center.Longitude + (visibleMapSpan.LongitudeDegrees / 2)
+                                     && longitudeDegreeField > visibleMapSpan.Center.Longitude - (visibleMapSpan.LongitudeDegrees / 2))
                                 {
                                     Navaid navaid = csvReader.GetRecord<Navaid>();
                                     navaids.Add(navaid);

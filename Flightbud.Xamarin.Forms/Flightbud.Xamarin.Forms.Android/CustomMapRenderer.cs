@@ -64,18 +64,18 @@ namespace Flightbud.Xamarin.Forms.Droid
                 if ((sender as AviationMap).ItemsSource == null)
                     return;
 
-                await UpdatePins(sender as AviationMap);
+                UpdatePins(sender as AviationMap);
             }
         }
 
-        protected async Task UpdatePins(AviationMap map)
+        protected void UpdatePins(AviationMap map)
         {
-            var currentMapItems = mapPageViewModel.MapItems.ToList();
-            var newMapItems = currentMapItems.Where(item => !map.Pins.Any(pin => pin.Position.Equals(item.Position)));
-
-            foreach (var newItem in newMapItems)
+            lock (mapPageViewModel.MapItems)
             {
-                await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(newItem.MapPin));
+                foreach (var newItem in mapPageViewModel.MapItems.Where(item => !map.Pins.Any(pin => pin.Position.Equals(item.Position))))
+                {
+                    Device.InvokeOnMainThreadAsync(() => map.Pins.Add(newItem.MapPin));
+                }
             }
         }
 

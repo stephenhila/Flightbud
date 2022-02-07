@@ -110,7 +110,7 @@ namespace Flightbud.Xamarin.Forms
 
         private async Task<List<MapItemBase>> GetMapData(IMapRegionData<MapItemBase> dataSource, CancellationToken ct)
         {
-            return await dataSource.Get(viewModel.Map.VisibleRegion.Center, viewModel.Map.VisibleRegion.Radius.Kilometers, ct);
+            return await dataSource.Get(viewModel.Map.VisibleRegion, ct);
         }
 
         private bool BeginCurrentLocationUpdate()

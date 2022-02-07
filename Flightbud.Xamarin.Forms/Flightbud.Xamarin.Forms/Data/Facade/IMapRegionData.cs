@@ -1,7 +1,5 @@
 ﻿using Flightbud.Xamarin.Forms.Data.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
@@ -21,6 +19,6 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
         /// <param name="radius">The radius of the region to search, in kilometers.</param>
         /// <param name="ct">Cancellation Token for handling data retrieval cancellation scenarios.</param>
         /// <returns></returns>
-        Task<List<T>> Get(Position center, double radius, CancellationToken ct = default);
+        Task<List<T>> Get(MapSpan visibleMapSpan, CancellationToken ct = default);
     }
 }

@@ -3,7 +3,6 @@ using CsvHelper.Configuration;
 using Flightbud.Xamarin.Forms.Data.Models;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;

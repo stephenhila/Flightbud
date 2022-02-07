@@ -88,21 +88,21 @@ namespace Flightbud.Xamarin.Forms.UWP
 
         protected void UpdatePins(AviationMap map)
         {
-            var currentMapItems = mapPageViewModel.MapItems.ToList();
-            var newMapItems = currentMapItems.Where(item => !nativeMap.MapElements.Any(elem => (elem as MapIcon).Location.Position.Equals(item.Position)));
-
-            foreach (var newMapItem in newMapItems)
+            lock (mapPageViewModel.MapItems)
             {
-                var snPosition = new BasicGeoposition { Latitude = newMapItem.Position.Latitude, Longitude = newMapItem.Position.Longitude };
-                var snPoint = new Geopoint(snPosition);
+                foreach (var newMapItem in mapPageViewModel.MapItems.Where(item => !nativeMap.MapElements.Any(elem => (elem as MapIcon).Location.Position.Equals(item.Position))))
+                {
+                    var snPosition = new BasicGeoposition { Latitude = newMapItem.Position.Latitude, Longitude = newMapItem.Position.Longitude };
+                    var snPoint = new Geopoint(snPosition);
 
-                var mapIcon = new MapIcon();
-                mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{newMapItem.MapPin.Image}"));
-                mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
-                mapIcon.Location = snPoint;
-                mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
+                    var mapIcon = new MapIcon();
+                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{newMapItem.MapPin.Image}"));
+                    mapIcon.CollisionBehaviorDesired = MapElementCollisionBehavior.RemainVisible;
+                    mapIcon.Location = snPoint;
+                    mapIcon.NormalizedAnchorPoint = new Windows.Foundation.Point(0.5, 1.0);
 
-                nativeMap.MapElements.Add(mapIcon);
+                    nativeMap.MapElements.Add(mapIcon);
+                }
             }
         }
 

@@ -1,11 +1,6 @@
 ﻿using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace Flightbud.Xamarin.Forms
