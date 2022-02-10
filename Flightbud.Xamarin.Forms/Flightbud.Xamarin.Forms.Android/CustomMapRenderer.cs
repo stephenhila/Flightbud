@@ -59,7 +59,7 @@ namespace Flightbud.Xamarin.Forms.Droid
 
             if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
-                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
+                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = (sender as AviationMap).VisibleRegion});
 
                 if ((sender as AviationMap).ItemsSource == null)
                     return;

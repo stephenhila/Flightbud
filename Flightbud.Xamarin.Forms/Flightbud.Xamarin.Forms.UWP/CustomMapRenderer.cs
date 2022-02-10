@@ -81,7 +81,7 @@ namespace Flightbud.Xamarin.Forms.UWP
 
             if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
-                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
+                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = (sender as AviationMap).VisibleRegion });
 
                 UpdatePins(sender as AviationMap);
             }

@@ -60,9 +60,9 @@ namespace Flightbud.Xamarin.Forms.View.Controls
 
     public class VisibleRegionChangedEventArgs : EventArgs
     {
-        // just in-case we need more parameters for the event args.. never know..
+        public MapSpan VisibleRegion { get; set; }
     }
-    public delegate void VisibleRegionChangedEventHandler(object sender, VisibleRegionChangedEventArgs e);
+    public delegate Task VisibleRegionChangedEventHandler(object sender, VisibleRegionChangedEventArgs e);
 
     public class MapItemDetailsRequestedEventArgs : EventArgs
     {

@@ -28,6 +28,10 @@
                                    Scale="0.33"
                                    HorizontalOptions="StartAndExpand"
                                    Color="LightCyan" />
+                <Switch AbsoluteLayout.LayoutBounds="0.99,0.1,-1,-1"
+                        AbsoluteLayout.LayoutFlags="PositionProportional"
+                        OnColor="LightCyan" ThumbColor="LightCyan"
+                        IsToggled="{Binding IsAutoFollow, Mode=TwoWay}"/>
             </AbsoluteLayout>
         </ContentView>
     </ContentPage.Content>
