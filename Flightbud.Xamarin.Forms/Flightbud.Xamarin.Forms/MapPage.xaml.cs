@@ -49,7 +49,7 @@ namespace Flightbud.Xamarin.Forms
                     {
                         if (viewModel.IsAutoFollow)
                         {
-                            Device.BeginInvokeOnMainThread(async () => await UpdateLocation());
+                            Device.BeginInvokeOnMainThread(async () => await UpdateLocation(viewModel.Map.VisibleRegion.Radius.Kilometers));
                             // do something with time...
                         }
                     });
@@ -64,17 +64,17 @@ namespace Flightbud.Xamarin.Forms
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                await UpdateLocation();
+                await UpdateLocation(Constants.LOCATION_INITIAL_SPAN_RADIUS);
                 await VisibleRegionChangedEventHandler(this, new VisibleRegionChangedEventArgs { VisibleRegion = viewModel.CurrentGeolocation });
 
                 _stopwatch.Start();
             });
         }
 
-        private async Task<bool> UpdateLocation()
+        private async Task<bool> UpdateLocation(double radius)
         {
             var currentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
-            viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(Constants.LOCATION_INITIAL_SPAN_RADIUS));
+            viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
             viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
 
             // TODO: implement error-handling later
