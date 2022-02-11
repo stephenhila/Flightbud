@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Flightbud.Xamarin.Forms.View.Models;
+using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms.Maps;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
@@ -12,8 +12,9 @@ namespace Flightbud.Xamarin.Forms.Data.Models
     {
         public abstract double Latitude { get; set; }
         public abstract double Longitude { get; set; }
-
         public abstract string Name { get; set; }
+        public abstract string Country { get; set; }
+        public abstract BaseAviationPin MapPin { get; }
 
         [CsvHelper.Configuration.Attributes.Ignore]
         Position _position;
@@ -29,5 +30,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                 return _position;
             }
         }
+
+        public abstract Task LoadDetails(CancellationToken ct = default);
     }
 }

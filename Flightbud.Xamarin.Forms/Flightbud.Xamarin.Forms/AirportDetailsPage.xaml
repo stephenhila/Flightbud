@@ -16,7 +16,7 @@
                     <Label StyleClass="MapItemDetailHeader"
                            Text="{Binding SelectedAirport.Name}"/>
                 </StackLayout>
-                <Image Source="icon_map_airport.png" 
+                <Image Source="icon_airport.png" 
                        HorizontalOptions="End" />
             </StackLayout>
                 <StackLayout Orientation="Vertical">

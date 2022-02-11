@@ -3,37 +3,95 @@ using CsvHelper.Configuration;
 using Flightbud.Xamarin.Forms.Data.Models;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Flightbud.Xamarin.Forms.Data.Facade
 {
-    public class RunwayData
+    public class RunwaySylvanDataSource : IAirportDetailsData<Runway>
     {
-        public List<Runway> Get(double airportId)
+        public async Task<List<Runway>> Get(double airportId, CancellationToken ct = default)
         {
             List<Runway> runways = null;
-            var airportsCsvResourceId = Constants.RUNWAY_DATA_RESOURCE;
-            var assembly = Assembly.GetExecutingAssembly();
-            Stream stream = assembly.GetManifestResourceStream(airportsCsvResourceId);
 
-            using (var reader = new System.IO.StreamReader(stream))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.RUNWAY_DATA_RESOURCE))
             {
-                if (reader != null)
+                using (var streamReader = new System.IO.StreamReader(stream))
                 {
-                    using (var csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "," }))
+                    var reader = await Sylvan.Data.Csv.CsvDataReader.CreateAsync(streamReader);
+                    runways = new List<Runway>();
+
+                    while (await reader.ReadAsync(ct))
                     {
-                        csvReader.Read();
-                        csvReader.ReadHeader();
-                        runways = new List<Runway>();
-                        while (csvReader.Read())
+                        double airportIdValue = reader.GetDouble(1);
+
+                        if (airportId == airportIdValue)
                         {
-                            // this is a hard-coded field. yes it is. fite me!!!
-                            var airportRef = csvReader.GetField<double>(csvReader.GetFieldIndex("airport_ref"));
-                            if (airportId == airportRef)
+                            Runway runway = new Runway
                             {
-                                Runway runway = csvReader.GetRecord<Runway>();
-                                runways.Add(runway);
+                                AirportId = airportIdValue,
+                                Surface = reader.GetString(5),
+                                HeadingLowEnd = reader.GetString(8),
+                                HeadingHighEnd = reader.GetString(14),
+                            };
+
+                            string lengthValue = reader.GetString(3);
+                            if (!string.IsNullOrEmpty(lengthValue))
+                            {
+                                runway.Length = int.Parse(lengthValue);
+                            }
+                            string widthValue = reader.GetString(4);
+                            if (!string.IsNullOrEmpty(widthValue))
+                            {
+                                runway.Width = int.Parse(widthValue);
+                            }
+                            string elevationLowEndValue = reader.GetString(11);
+                            if (!string.IsNullOrEmpty(elevationLowEndValue))
+                            {
+                                runway.ElevationLowEnd = double.Parse(elevationLowEndValue);
+                            }
+                            string elevationHighEndValue = reader.GetString(17);
+                            if (!string.IsNullOrEmpty(elevationHighEndValue))
+                            {
+                                runway.ElevationHighEnd = double.Parse(elevationHighEndValue);
+                            }
+
+                            runways.Add(runway);
+                        }
+                    }
+                }
+            }
+            return runways;
+        }
+    }
+
+    public class RunwayCsvReaderDataSource : IAirportDetailsData<Runway>
+    {
+        public async Task<List<Runway>> Get(double airportId, CancellationToken ct = default)
+        {
+            List<Runway> runways = null;
+
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(Constants.RUNWAY_DATA_RESOURCE))
+            {
+                using (var reader = new System.IO.StreamReader(stream))
+                {
+                    if (reader != null)
+                    {
+                        using (var csvReader = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "," }))
+                        {
+                            csvReader.Read();
+                            csvReader.ReadHeader();
+                            runways = new List<Runway>();
+                            while (await csvReader.ReadAsync())
+                            {
+                                // this is a hard-coded field. yes it is. fite me!!!
+                                var airportRef = csvReader.GetField<double>(csvReader.GetFieldIndex("airport_ref"));
+                                if (airportId == airportRef)
+                                {
+                                    Runway runway = csvReader.GetRecord<Runway>();
+                                    runways.Add(runway);
+                                }
                             }
                         }
                     }

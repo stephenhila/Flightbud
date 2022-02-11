@@ -2,11 +2,7 @@
 using Flightbud.Xamarin.Forms.View.Controls;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xamarin.Essentials;
 using Xamarin.Forms.Maps;
-using Map = Xamarin.Forms.Maps.Map;
 
 namespace Flightbud.Xamarin.Forms.View.Models
 {
@@ -16,38 +12,48 @@ namespace Flightbud.Xamarin.Forms.View.Models
     public class MapPageViewModel : ViewModelBase
     {
         public AviationMap Map { get; set; }
-        public MapSpan MapSpan { get; set; }
-        public Position MapCenter { get; set; }
-        public double MapSpanRadius { get; set; }
 
-        Location _currentLocation;
-        public Location CurrentLocation
-        { 
-            get
-            {
-                return _currentLocation;
-            }
-            set
-            {
-                _currentLocation = value;
-                OnPropertyChanged();
-            }
-        }
+        public double MapItemsSearchFrequency { get; set; }
+
+        public MapSpan CurrentGeolocation { get; set; }
 
         public List<MapItemBase> MapItems { get; set; }
 
-        public MapPageViewModel(AviationMap map, Location location, double mapSpanRadius)
-        {
-            Map = map;
-            CurrentLocation = location;
-            MapSpanRadius = mapSpanRadius;
-
-            MapItems = new List<MapItemBase>();
+        bool _isLoading;
+        public bool IsLoading 
+        { 
+            get { return _isLoading; }
+            set { _isLoading = value; OnPropertyChanged(); }
         }
 
-        public void Update()
+        bool _isAutoFollow = false;
+        public bool IsAutoFollow
         {
-            Map.MoveToRegion(MapSpan);
+            get { return _isAutoFollow; }
+            set { _isAutoFollow = value; OnPropertyChanged(); }
+        }
+
+        bool _isMapPanning = false;
+        public bool IsMapPanning
+        {
+            get { return _isMapPanning; }
+            set { _isMapPanning = value; OnPropertyChanged(); }
+        }
+
+        bool _autoFollow = false;
+        public bool AutoFollow
+        {
+            set { _autoFollow = value; }
+            get { return _autoFollow; OnPropertyChanged(); }
+        }
+
+        public MapPageViewModel(AviationMap map)
+        {
+            Map = map;
+
+            MapItems = new List<MapItemBase>();
+            _isMapPanning = false;
+            _isLoading = false;
         }
     }
 }

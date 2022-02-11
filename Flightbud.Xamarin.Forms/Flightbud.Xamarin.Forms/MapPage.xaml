@@ -6,18 +6,33 @@
              x:Class="Flightbud.Xamarin.Forms.MapPage">
     <ContentPage.Content>
         <ContentView>
-            <controls:AviationMap x:Name="AviationMap" 
-                                IsShowingUser="True"
-                                MapType="Satellite"
-                                ItemsSource="{Binding MapItems}"
-                                VisibleRegionChanged="VisibleRegionChangedEventHandler"
-                                MapItemDetailsRequested="MapItemDetailsRequestedEventHandler">
-                <controls:AviationMap.ItemTemplate>
-                    <DataTemplate>
-                        <maps:Pin Position="{Binding Position}" />
-                    </DataTemplate>
-                </controls:AviationMap.ItemTemplate>
-            </controls:AviationMap>
+            <AbsoluteLayout>
+                <controls:AviationMap x:Name="AviationMap"
+                                      AbsoluteLayout.LayoutFlags="All"
+                                      AbsoluteLayout.LayoutBounds="0,0,1,1"
+                                      IsShowingUser="True"
+                                      MapType="Satellite"
+                                      ItemsSource="{Binding MapItems}"
+                                      VisibleRegionChanged="VisibleRegionChangedEventHandler"
+                                      VisibleRegionChangedFrequency="{Binding MapItemsSearchFrequency}"
+                                      MapItemDetailsRequested="MapItemDetailsRequestedEventHandler">
+                    <controls:AviationMap.ItemTemplate>
+                        <DataTemplate>
+                            <maps:Pin Position="{Binding Position}" />
+                        </DataTemplate>
+                    </controls:AviationMap.ItemTemplate>
+                </controls:AviationMap>
+                <ActivityIndicator AbsoluteLayout.LayoutBounds="0.01,0.01,-1,-1"
+                                   AbsoluteLayout.LayoutFlags="PositionProportional"
+                                   IsRunning="{Binding IsLoading}" 
+                                   Scale="0.33"
+                                   HorizontalOptions="StartAndExpand"
+                                   Color="LightCyan" />
+                <Switch AbsoluteLayout.LayoutBounds="0.99,0.1,-1,-1"
+                        AbsoluteLayout.LayoutFlags="PositionProportional"
+                        OnColor="LightCyan" ThumbColor="LightCyan"
+                        IsToggled="{Binding IsAutoFollow, Mode=TwoWay}"/>
+            </AbsoluteLayout>
         </ContentView>
     </ContentPage.Content>
 </ContentPage>

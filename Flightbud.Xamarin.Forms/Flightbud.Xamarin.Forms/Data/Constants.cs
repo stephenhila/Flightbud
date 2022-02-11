@@ -13,10 +13,12 @@
         public const string NO_DATA_SUPPORT = "data not supported";
 
         //LIMITS
-        public const double LOCATION_INITIAL_SPAN_RADIUS = 10;
+        public const double LOCATION_INITIAL_SPAN_RADIUS = 11.1;
         public const double LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD = 100;
 
         //TIMEOUTS
-        public const int LOCATION_UPDATE_DELAY_MILLISECONDS = 750;
+        public const int AUTO_FOLLOW_RESUME_MILLISECONDS = 10000;
+        public const int AUTO_FOLLOW_FREQUENCY_MILLISECONDS = 5000;
+        public const int MAP_ITEMS_SEARCH_FREQUENCY = 2500;
     }
 }

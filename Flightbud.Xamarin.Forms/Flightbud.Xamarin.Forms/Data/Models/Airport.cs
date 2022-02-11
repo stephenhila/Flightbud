@@ -1,10 +1,8 @@
 ﻿using Flightbud.Xamarin.Forms.Data.Facade;
 using Flightbud.Xamarin.Forms.View.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using Xamarin.Forms.Maps;
+using System.Threading.Tasks;
 
 namespace Flightbud.Xamarin.Forms.Data.Models
 {
@@ -14,9 +12,9 @@ namespace Flightbud.Xamarin.Forms.Data.Models
     public class Airport : MapItemBase
     {
         [CsvHelper.Configuration.Attributes.Ignore]
-        AirportPin _pin;
+        BaseAviationPin _pin;
         [CsvHelper.Configuration.Attributes.Ignore]
-        public AirportPin MapPin 
+        public override BaseAviationPin MapPin 
         {
             get 
             {
@@ -24,7 +22,7 @@ namespace Flightbud.Xamarin.Forms.Data.Models
                 {
                     _pin = new AirportPin 
                     {
-                        Address = Code,
+                        Address = Country,
                         Label = Code,
                         Name = Name,
                         Position = Position,
@@ -49,9 +47,8 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         [CsvHelper.Configuration.Attributes.Name("elevation_ft")]
         public double? Elevation { get; set; }
         [CsvHelper.Configuration.Attributes.Name("iso_country")]
-        public string Country { get; set; }
+        public override string Country { get; set; }
         
-        RunwayData _runwayDataSource = new RunwayData();
         List<Runway> _runways;
 
         [CsvHelper.Configuration.Attributes.Ignore]
@@ -59,28 +56,24 @@ namespace Flightbud.Xamarin.Forms.Data.Models
         {
             get
             {
-                if (_runways == null)
-                {
-                    _runways = _runwayDataSource.Get(Id);
-                }
                 return _runways;
             }
         }
 
-        AirportFrequencyData _airportFrequencyDataSource = new AirportFrequencyData();
         List<AirportFrequency> _frequencies;
-
         [CsvHelper.Configuration.Attributes.Ignore]
         public List<AirportFrequency> Frequencies
         {
             get
             {
-                if (_frequencies == null)
-                {
-                    _frequencies = _airportFrequencyDataSource.Get(Id);
-                }
                 return _frequencies;
             }
+        }
+
+        public override async Task LoadDetails(CancellationToken ct = default)
+        {
+            _frequencies = await (new AirportFrequencySylvanDataSource()).Get(Id, ct);
+            _runways = await (new RunwaySylvanDataSource()).Get(Id, ct);
         }
     }
 }

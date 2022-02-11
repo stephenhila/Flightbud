@@ -4,6 +4,6 @@
     {
         public string Name { get; set; }
 
-        public override string Image => "icon_pin_solidblue.png";
+        public override string Image => "icon_map_airport.png";
     }
 }

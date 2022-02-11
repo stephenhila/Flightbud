@@ -59,40 +59,30 @@ namespace Flightbud.Xamarin.Forms.Droid
 
             if (sender is AviationMap && e.PropertyName == "VisibleRegion")
             {
-                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs());
+                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = (sender as AviationMap).VisibleRegion});
 
-                if ((sender as AviationMap).AirportPins == null 
-                 && (sender as AviationMap).VorPins == null 
-                 && (sender as AviationMap).NdbPins == null)
+                if ((sender as AviationMap).ItemsSource == null)
                     return;
 
-                await UpdatePins(sender as AviationMap);
+                UpdatePins(sender as AviationMap);
             }
         }
 
-        protected async Task UpdatePins(AviationMap map)
+        protected void UpdatePins(AviationMap map)
         {
-            foreach (var pin in map.AirportPins)
+            lock (mapPageViewModel.MapItems)
             {
-                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
+                lock (map.Pins)
                 {
-                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
-                }
-            }
-
-            foreach (var pin in map.VorPins)
-            {
-                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
-                {
-                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
-                }
-            }
-
-            foreach (var pin in map.NdbPins)
-            {
-                if (!map.Pins.Any(p => p.Position.Equals(pin.Position)))
-                {
-                    await Device.InvokeOnMainThreadAsync(() => map.Pins.Add(pin));
+                    foreach (var mapItem in mapPageViewModel.MapItems)
+                    {
+                            if (!(map.Pins.Any(pin => 
+                                   pin.Position.Latitude == mapItem.Position.Latitude 
+                                && pin.Position.Longitude == mapItem.Position.Longitude)))
+                            {
+                                Device.InvokeOnMainThreadAsync(() => map.Pins.Add(mapItem.MapPin));
+                            }
+                    }
                 }
             }
         }
@@ -112,7 +102,7 @@ namespace Flightbud.Xamarin.Forms.Droid
             marker.SetTitle(pin.Label);
             marker.SetSnippet(pin.Address);
             if (pin is AirportPin)
-                marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_pin_solidblue));
+                marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_map_airport));
             else if (pin is VorPin)
                 marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_map_vor));
             else if (pin is NdbPin)
