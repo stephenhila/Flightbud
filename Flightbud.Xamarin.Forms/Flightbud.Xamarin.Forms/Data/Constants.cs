@@ -13,6 +13,7 @@
         public const string NO_DATA_SUPPORT = "data not supported";
 
         //LIMITS
+        public const int LOCATION_TIMEOUT = 60000;
         public const double LOCATION_INITIAL_SPAN_RADIUS = 11.1;
         public const double LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD = 100;
 

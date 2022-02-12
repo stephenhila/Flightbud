@@ -75,7 +75,7 @@ namespace Flightbud.Xamarin.Forms
 
         private async Task<bool> UpdateLocation(double radius)
         {
-            var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, TimeSpan.FromSeconds(60));
+            var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT);
             viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
             viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
 

@@ -8,6 +8,6 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 {
     public interface ILocationData
     {
-        Task<Location> Get(GeolocationAccuracy accuracy, TimeSpan timeout);
+        Task<Location> Get(GeolocationAccuracy accuracy, int timeout);
     }
 }

@@ -8,9 +8,9 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
 {
     public class DeviceGpsLocationData : ILocationData
     {
-        public async Task<Location> Get(GeolocationAccuracy accuracy, TimeSpan timeout)
+        public async Task<Location> Get(GeolocationAccuracy accuracy, int timeout)
         {
-            return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
+            return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromMilliseconds(timeout)));
         }
     }
 }
