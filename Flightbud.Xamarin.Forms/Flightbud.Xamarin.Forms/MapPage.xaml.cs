@@ -19,7 +19,8 @@ namespace Flightbud.Xamarin.Forms
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPage : ContentPage
     {
-        List<IMapRegionData<MapItemBase>> dataSources;
+        List<IMapRegionData<MapItemBase>> regionDataSources;
+        ILocationData locationDataSource;
         MapPageViewModel viewModel;
         AirportDetailsPage airportDetailsPage;
 
@@ -34,11 +35,12 @@ namespace Flightbud.Xamarin.Forms
             viewModel.MapItemsSearchFrequency = Constants.MAP_ITEMS_SEARCH_FREQUENCY;
             BindingContext = viewModel;
 
-            dataSources = new List<IMapRegionData<MapItemBase>>
+            regionDataSources = new List<IMapRegionData<MapItemBase>>
             {
                 new AirportDataSylvanDataSource(),
                 new NavaidDataSylvanDataSource()
             };
+            locationDataSource = new DeviceGpsLocationData();
 
             LoadLocation();
 
@@ -73,11 +75,10 @@ namespace Flightbud.Xamarin.Forms
 
         private async Task<bool> UpdateLocation(double radius)
         {
-            var currentLocation = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(60)));
+            var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, TimeSpan.FromSeconds(60));
             viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
             viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
 
-            // TODO: implement error-handling later
             return true;
         }
 
@@ -107,7 +108,7 @@ namespace Flightbud.Xamarin.Forms
                 viewModel.IsLoading = true;
 
                 IEnumerable<Task<List<MapItemBase>>> mapDataTasksQuery =
-                from dataSource in dataSources
+                from dataSource in regionDataSources
                 select GetMapData(e.VisibleRegion, dataSource, ct);
 
                 List<Task<List<MapItemBase>>> listOfTasks = mapDataTasksQuery.ToList();
