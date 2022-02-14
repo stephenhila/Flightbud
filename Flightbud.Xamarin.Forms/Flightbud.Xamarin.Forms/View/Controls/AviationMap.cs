@@ -34,14 +34,15 @@ namespace Flightbud.Xamarin.Forms.View.Controls
         {
             if (VisibleRegionChanged != null)
             {
-                if (_stopwatch.ElapsedMilliseconds > VisibleRegionChangedFrequency)
-                {
-                    if (VisibleRegion.Radius.Kilometers < Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD)
-                    {
-                        await Task.Run(() => VisibleRegionChanged(this, e));
-                    }
-                    _stopwatch.Restart();
-                }
+                await Task.Run(() => VisibleRegionChanged(this, e));
+                //if (_stopwatch.ElapsedMilliseconds > VisibleRegionChangedFrequency)
+                //{
+                //    if (VisibleRegion.Radius.Kilometers < Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD)
+                //    {
+                //        await Task.Run(() => VisibleRegionChanged(this, e));
+                //    }
+                //    _stopwatch.Restart();
+                //}
             }
         }
 

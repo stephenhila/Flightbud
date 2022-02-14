@@ -19,7 +19,7 @@
 
         //TIMEOUTS
         public const int AUTO_FOLLOW_RESUME_MILLISECONDS = 10000;
-        public const int AUTO_FOLLOW_FREQUENCY_MILLISECONDS = 5000;
+        public const int AUTO_FOLLOW_FREQUENCY_MILLISECONDS = 3000;
         public const int MAP_ITEMS_SEARCH_FREQUENCY = 2500;
     }
 }

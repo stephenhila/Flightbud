@@ -24,7 +24,8 @@ namespace Flightbud.Xamarin.Forms
         MapPageViewModel viewModel;
         AirportDetailsPage airportDetailsPage;
 
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource regionDataCancellationTokenSource = new CancellationTokenSource();
+        CancellationTokenSource locationDataCancellationTokenSource = new CancellationTokenSource();
 
         Stopwatch _stopwatch;
 
@@ -40,7 +41,7 @@ namespace Flightbud.Xamarin.Forms
                 new AirportDataSylvanDataSource(),
                 new NavaidDataSylvanDataSource()
             };
-            locationDataSource = new DeviceGpsLocationData();
+            locationDataSource = LocationDataSourceFactory.Create();
 
             LoadLocation();
 
@@ -51,7 +52,7 @@ namespace Flightbud.Xamarin.Forms
                     {
                         if (viewModel.IsAutoFollow)
                         {
-                            Device.BeginInvokeOnMainThread(async () => await UpdateLocation(viewModel.Map.VisibleRegion.Radius.Kilometers));
+                            Device.BeginInvokeOnMainThread(async () => await UpdateLocation());
                             // do something with time...
                         }
                     });
@@ -75,11 +76,30 @@ namespace Flightbud.Xamarin.Forms
 
         private async Task<bool> UpdateLocation(double radius)
         {
-            var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT);
-            viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
-            viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+            try
+            {
+                var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
+                viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
+                if (viewModel.CurrentGeolocation != null && viewModel.CurrentGeolocation != default)
+                {
+                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                }
+            }
+            catch (OperationCanceledException oce)
+            {
+                viewModel.IsAutoFollow = false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return true;
+        }
+
+        private async Task<bool> UpdateLocation()
+        {
+            return await UpdateLocation(viewModel.Map.VisibleRegion.Radius.Kilometers);
         }
 
         /// <summary>
@@ -95,7 +115,7 @@ namespace Flightbud.Xamarin.Forms
         /// <param name="e"></param>
         private async Task VisibleRegionChangedEventHandler(Object sender, VisibleRegionChangedEventArgs e)
         {
-            CancellationToken ct = cancellationTokenSource.Token;
+            CancellationToken ct = regionDataCancellationTokenSource.Token;
 
             try
             {

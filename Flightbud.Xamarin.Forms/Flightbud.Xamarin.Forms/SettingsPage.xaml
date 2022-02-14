@@ -7,17 +7,25 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="3*" />
                 </Grid.ColumnDefinitions>
 
                 <Label Text="SimConnect Location Mode" 
                        Grid.Column="0" Grid.Row="0" />
                 <Switch IsToggled="{Binding EnableSimConnect}" 
                         Grid.Column="1" Grid.Row="0" 
+                        HorizontalOptions="EndAndExpand"
                         OnColor="LightCyan" ThumbColor="LightCyan" />
+
+                <Label Text="SimConnect Api Url" 
+                       Grid.Column="0" Grid.Row="1" />
+                <Entry Text="{Binding SimConnectApiUrl}"
+                       Grid.Column="1" Grid.Row="1"
+                       IsVisible="{Binding EnableSimConnect}"/>
             </Grid>
         </StackLayout>
     </ContentPage.Content>

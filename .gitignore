@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # other stuff...
 /Flightbud.Xamarin.Forms/Flightbud.Xamarin.Forms.Android/Resources/Resource.designer.cs
+/Flightbud.SimConnect.Api/.config/dotnet-tools.json

@@ -16,5 +16,18 @@ namespace Flightbud.Xamarin.Forms.View.Models
                 OnPropertyChanged();
             }
         }
+
+        public string SimConnectApiUrl
+        {
+            get
+            {
+                return Preferences.Get(nameof(SimConnectApiUrl), string.Empty);
+            }
+            set
+            {
+                Preferences.Set(nameof(SimConnectApiUrl), value);
+                OnPropertyChanged();
+            }
+        }
     }
 }

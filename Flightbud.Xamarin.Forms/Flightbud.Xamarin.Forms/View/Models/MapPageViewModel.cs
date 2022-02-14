@@ -40,13 +40,6 @@ namespace Flightbud.Xamarin.Forms.View.Models
             set { _isMapPanning = value; OnPropertyChanged(); }
         }
 
-        bool _autoFollow = false;
-        public bool AutoFollow
-        {
-            set { _autoFollow = value; }
-            get { return _autoFollow; OnPropertyChanged(); }
-        }
-
         public MapPageViewModel(AviationMap map)
         {
             Map = map;

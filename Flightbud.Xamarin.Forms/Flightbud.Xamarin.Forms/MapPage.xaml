@@ -31,7 +31,7 @@
                 <Switch AbsoluteLayout.LayoutBounds="0.99,0.1,-1,-1"
                         AbsoluteLayout.LayoutFlags="PositionProportional"
                         OnColor="LightCyan" ThumbColor="LightCyan"
-                        IsToggled="{Binding IsAutoFollow, Mode=TwoWay}"/>
+                        IsToggled="{Binding IsAutoFollow}"/>
             </AbsoluteLayout>
         </ContentView>
     </ContentPage.Content>

@@ -38,6 +38,8 @@ namespace Flightbud.Xamarin.Forms.UWP
                     var formsMap = (AviationMap)e.NewElement;
                     nativeMap = Control as MapControl;
 
+                    nativeMap.TargetCameraChanged += NativeMap_TargetCameraChanged;
+
                     if (mapPageViewModel == null)
                     {
                         mapPageViewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
@@ -75,15 +77,13 @@ namespace Flightbud.Xamarin.Forms.UWP
             }
         }
 
-        protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void NativeMap_TargetCameraChanged(MapControl sender, MapTargetCameraChangedEventArgs args)
         {
-            base.OnElementPropertyChanged(sender, e);
-
-            if (sender is AviationMap && e.PropertyName == "VisibleRegion")
+            if (mapPageViewModel.Map.VisibleRegion != null)
             {
-                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = (sender as AviationMap).VisibleRegion });
+                await mapPageViewModel.Map.OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = mapPageViewModel.Map.VisibleRegion });
 
-                UpdatePins(sender as AviationMap);
+                UpdatePins(mapPageViewModel.Map);
             }
         }
 
