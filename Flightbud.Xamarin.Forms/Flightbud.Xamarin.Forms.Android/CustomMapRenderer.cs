@@ -84,7 +84,7 @@ namespace Flightbud.Xamarin.Forms.Droid
 
         private async void NativeMap_CameraMoveStarted(object sender, GoogleMap.CameraMoveStartedEventArgs e)
         {
-            if (e.Reason == 1)
+            if (e.Reason == 1 || e.Reason == 2)
             {
                 await mapPageViewModel.Map.OnMapPanning(new MapPanningEventArgs());
             }

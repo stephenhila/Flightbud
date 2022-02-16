@@ -69,7 +69,6 @@ namespace Flightbud.Xamarin.Forms
         {
             try
             {
-                locationDataCancellationTokenSource.CancelAfter(Constants.LOCATION_TIMEOUT);
                 var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
                 viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
                 if (viewModel.CurrentGeolocation != null && viewModel.CurrentGeolocation != default)
