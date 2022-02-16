@@ -22,6 +22,8 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
             _clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
         }
 
+        Location lastKnownLocation = null;
+
         public async Task<Location> Get(GeolocationAccuracy accuracy, int timeout, CancellationToken ct)
         {
             Location location;
@@ -36,16 +38,24 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                         {
                             string content = await response.Content.ReadAsStringAsync();
                             location = JsonSerializer.Deserialize<Location>(content, _jsonSerializerOptions);
+                            lastKnownLocation = location;
                         }
                         else
                         {
-                            location = null;
+                            location = lastKnownLocation;
                         }
                     }
                 }
                 catch
                 {
-                    location = null;
+                    if (lastKnownLocation != null)
+                    {
+                        location = lastKnownLocation;
+                    }
+                    else
+                    {
+                        location = await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromMilliseconds(timeout)), ct);
+                    }
                 }
             }
 

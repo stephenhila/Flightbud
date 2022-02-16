@@ -134,6 +134,7 @@
     <Content Include="Assets\icon_map_vor.png" />
     <Content Include="Assets\icon_pin_lightmagenta.png" />
     <Content Include="Assets\icon_pin_solidblue.png" />
+    <Content Include="Assets\icon_location_pointer.png" />
     <Content Include="Assets\icon_settings.png" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />

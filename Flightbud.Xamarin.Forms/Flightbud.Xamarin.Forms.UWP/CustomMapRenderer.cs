@@ -39,6 +39,7 @@ namespace Flightbud.Xamarin.Forms.UWP
                     nativeMap = Control as MapControl;
 
                     nativeMap.TargetCameraChanged += NativeMap_TargetCameraChanged;
+                    nativeMap.ActualCameraChanging += NativeMap_ActualCameraChanging;
 
                     if (mapPageViewModel == null)
                     {
@@ -74,6 +75,14 @@ namespace Flightbud.Xamarin.Forms.UWP
 
                     nativeMap.MapElements.Add(mapIcon);
                 }
+            }
+        }
+
+        private async void NativeMap_ActualCameraChanging(MapControl sender, MapActualCameraChangingEventArgs args)
+        {
+            if (args.ChangeReason == MapCameraChangeReason.UserInteraction)
+            {
+                await mapPageViewModel.Map.OnMapPanning(new MapPanningEventArgs());
             }
         }
 

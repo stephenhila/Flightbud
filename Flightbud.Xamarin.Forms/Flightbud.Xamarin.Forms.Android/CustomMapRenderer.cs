@@ -82,9 +82,12 @@ namespace Flightbud.Xamarin.Forms.Droid
             NativeMap.CameraMoveStarted += NativeMap_CameraMoveStarted;
         }
 
-        private void NativeMap_CameraMoveStarted(object sender, GoogleMap.CameraMoveStartedEventArgs e)
+        private async void NativeMap_CameraMoveStarted(object sender, GoogleMap.CameraMoveStartedEventArgs e)
         {
-            
+            if (e.Reason == 1)
+            {
+                await mapPageViewModel.Map.OnMapPanning(new MapPanningEventArgs());
+            }
         }
 
         private async void NativeMap_CameraIdle(object sender, EventArgs e)

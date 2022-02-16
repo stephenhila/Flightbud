@@ -22,12 +22,12 @@ namespace Flightbud.Xamarin.Forms.View.Controls
             get { return Convert.ToDouble(base.GetValue(VisibleRegionChangedFrequencyProperty)); }
         }
 
-        Stopwatch _stopwatch;
-
-        public AviationMap()
+        public async Task OnMapPanning(MapPanningEventArgs e)
         {
-            _stopwatch = new Stopwatch();
-            _stopwatch.Start();
+            if (MapPanning != null)
+            {
+                await MapPanning(this, e);
+            }
         }
 
         public async Task OnVisibleRegionChanged(VisibleRegionChangedEventArgs e)
@@ -35,14 +35,6 @@ namespace Flightbud.Xamarin.Forms.View.Controls
             if (VisibleRegionChanged != null)
             {
                 await Task.Run(() => VisibleRegionChanged(this, e));
-                //if (_stopwatch.ElapsedMilliseconds > VisibleRegionChangedFrequency)
-                //{
-                //    if (VisibleRegion.Radius.Kilometers < Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD)
-                //    {
-                //        await Task.Run(() => VisibleRegionChanged(this, e));
-                //    }
-                //    _stopwatch.Restart();
-                //}
             }
         }
 
@@ -54,10 +46,16 @@ namespace Flightbud.Xamarin.Forms.View.Controls
             }
         }
 
+        public event MapPanningEventHandler MapPanning;
         public event VisibleRegionChangedEventHandler VisibleRegionChanged;
         public event MapItemDetailsRequestedEventHandler MapItemDetailsRequested;
     }
 
+    public class MapPanningEventArgs : EventArgs
+    {
+
+    }
+    public delegate Task MapPanningEventHandler(object sender, MapPanningEventArgs e);
 
     public class VisibleRegionChangedEventArgs : EventArgs
     {

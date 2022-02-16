@@ -10,9 +10,10 @@
                 <controls:AviationMap x:Name="AviationMap"
                                       AbsoluteLayout.LayoutFlags="All"
                                       AbsoluteLayout.LayoutBounds="0,0,1,1"
-                                      IsShowingUser="True"
+                                      IsShowingUser="False"
                                       MapType="Satellite"
                                       ItemsSource="{Binding MapItems}"
+                                      MapPanning="MapPanningEventHandler"
                                       VisibleRegionChanged="VisibleRegionChangedEventHandler"
                                       VisibleRegionChangedFrequency="{Binding MapItemsSearchFrequency}"
                                       MapItemDetailsRequested="MapItemDetailsRequestedEventHandler">
@@ -28,7 +29,7 @@
                                    Scale="0.33"
                                    HorizontalOptions="StartAndExpand"
                                    Color="LightCyan" />
-                <Switch AbsoluteLayout.LayoutBounds="0.99,0.1,-1,-1"
+                <Switch AbsoluteLayout.LayoutBounds="0.99,0.01,-1,-1"
                         AbsoluteLayout.LayoutFlags="PositionProportional"
                         OnColor="LightCyan" ThumbColor="LightCyan"
                         IsToggled="{Binding IsAutoFollow}"/>

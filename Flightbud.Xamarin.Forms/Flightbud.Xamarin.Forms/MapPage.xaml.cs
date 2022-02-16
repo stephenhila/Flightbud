@@ -1,6 +1,7 @@
 ﻿using Flightbud.Xamarin.Forms.Data;
 using Flightbud.Xamarin.Forms.Data.Facade;
 using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.Utils;
 using Flightbud.Xamarin.Forms.View.Controls;
 using Flightbud.Xamarin.Forms.View.Models;
 using System;
@@ -27,13 +28,13 @@ namespace Flightbud.Xamarin.Forms
         CancellationTokenSource regionDataCancellationTokenSource = new CancellationTokenSource();
         CancellationTokenSource locationDataCancellationTokenSource = new CancellationTokenSource();
 
-        Stopwatch _stopwatch;
+        TaskElapsedTimeScheduler locationUpdatesScheduler = new TaskElapsedTimeScheduler();
 
         public MapPage()
         {
             InitializeComponent();
             viewModel = new MapPageViewModel(this.AviationMap);
-            viewModel.MapItemsSearchFrequency = Constants.MAP_ITEMS_SEARCH_FREQUENCY;
+            viewModel.MapItemsSearchFrequency = Constants.MAP_ITEMS_SEARCH_FREQUENCY_MILISECONDS;
             BindingContext = viewModel;
 
             regionDataSources = new List<IMapRegionData<MapItemBase>>
@@ -45,22 +46,14 @@ namespace Flightbud.Xamarin.Forms
 
             LoadLocation();
 
-            Device.StartTimer(TimeSpan.FromMilliseconds(Constants.AUTO_FOLLOW_FREQUENCY_MILLISECONDS), 
-                () =>
+            locationUpdatesScheduler.StartTask(
+                async () =>
                 {
-                    Task.Run(async () =>
+                    if (viewModel.IsAutoFollow)
                     {
-                        if (viewModel.IsAutoFollow)
-                        {
-                            Device.BeginInvokeOnMainThread(async () => await UpdateLocation());
-                            // do something with time...
-                        }
-                    });
-
-                    return true;
-                });
-
-            _stopwatch = new Stopwatch();
+                        await UpdateLocation();
+                    }
+                }, Constants.AUTO_FOLLOW_FREQUENCY_MILLISECONDS);
         }
 
         private void LoadLocation()
@@ -69,8 +62,6 @@ namespace Flightbud.Xamarin.Forms
             {
                 await UpdateLocation(Constants.LOCATION_INITIAL_SPAN_RADIUS);
                 await VisibleRegionChangedEventHandler(this, new VisibleRegionChangedEventArgs { VisibleRegion = viewModel.CurrentGeolocation });
-
-                _stopwatch.Start();
             });
         }
 
@@ -78,16 +69,21 @@ namespace Flightbud.Xamarin.Forms
         {
             try
             {
+                locationDataCancellationTokenSource.CancelAfter(Constants.LOCATION_TIMEOUT);
                 var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
                 viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
                 if (viewModel.CurrentGeolocation != null && viewModel.CurrentGeolocation != default)
                 {
-                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                    });
                 }
             }
             catch (OperationCanceledException oce)
             {
                 viewModel.IsAutoFollow = false;
+                locationDataCancellationTokenSource = new CancellationTokenSource();
             }
             catch (Exception ex)
             {
@@ -103,13 +99,33 @@ namespace Flightbud.Xamarin.Forms
         }
 
         /// <summary>
-        /// Handles the event where Visible Region changes in the AviationMap.
+        /// Handles the Map Panning event, wherein the map starts to be panned by the user.
         /// 
-        /// Implements cancellation logic, wherein if more Visible Region changes happen, 
-        /// the previous attempt is cancelled as the new position takes new priority.
+        /// When the panning starts, we need to be cancelling retrieval of region data since 
+        /// there would be a new region shown after the panning.
         /// 
-        /// This is to optimize and prevent multiple instances of the app trying to
-        /// pull data from the data sources for each minute change in the map visible region.
+        /// We also need location update to be cancelled to avoid going back to your location
+        /// to avoid interrupting the panning process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private async Task MapPanningEventHandler(Object sender, MapPanningEventArgs e)
+        {
+            regionDataCancellationTokenSource.Cancel();
+            regionDataCancellationTokenSource = new CancellationTokenSource();
+            if (viewModel.IsAutoFollow)
+            {
+                locationDataCancellationTokenSource.Cancel();
+                locationDataCancellationTokenSource = new CancellationTokenSource();
+            }
+        }
+
+        /// <summary>
+        /// Handles the event where Visible Region changes in the AviationMap, after panning
+        /// is halted.
+        /// 
+        /// When region changes, map region data gets loaded into the new visible region.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
