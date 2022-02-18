@@ -12,7 +12,7 @@ namespace Flightbud.SimConnect.Api.Controllers
     [Route("[controller]")]
     public class SimVarController : ControllerBase
     {
-        object _requestLock = new object();
+        static object _requestLock = new object();
 
         private readonly ILogger<SimVarController> _logger;
         private readonly Dictionary<string, SimVarDefinition> simVarVariables = SimVarUnits.DefaultUnits;
@@ -30,9 +30,9 @@ namespace Flightbud.SimConnect.Api.Controllers
         {
             Location location = default;
 
-            if (!SimConnectHelper.SimConnectHelper.IsConnected)
+            lock (_requestLock)
             {
-                lock (_requestLock)
+                if (!SimConnectHelper.SimConnectHelper.IsConnected)
                 {
                     try
                     {

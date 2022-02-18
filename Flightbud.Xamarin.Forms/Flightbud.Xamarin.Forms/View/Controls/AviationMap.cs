@@ -10,18 +10,6 @@ namespace Flightbud.Xamarin.Forms.View.Controls
 {
     public class AviationMap : Map
     {
-        public static readonly BindableProperty VisibleRegionChangedFrequencyProperty = 
-            BindableProperty.Create(
-                propertyName: nameof(VisibleRegionChangedFrequency),
-                returnType: typeof(double),
-                declaringType: typeof(AviationMap),
-                defaultValue: default,
-                defaultBindingMode: BindingMode.OneWay);
-        public double VisibleRegionChangedFrequency
-        {
-            get { return Convert.ToDouble(base.GetValue(VisibleRegionChangedFrequencyProperty)); }
-        }
-
         public async Task OnMapPanning(MapPanningEventArgs e)
         {
             if (MapPanning != null)

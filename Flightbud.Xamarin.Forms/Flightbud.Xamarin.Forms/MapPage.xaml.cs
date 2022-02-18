@@ -28,13 +28,12 @@ namespace Flightbud.Xamarin.Forms
         CancellationTokenSource regionDataCancellationTokenSource = new CancellationTokenSource();
         CancellationTokenSource locationDataCancellationTokenSource = new CancellationTokenSource();
 
-        TaskElapsedTimeScheduler locationUpdatesScheduler = new TaskElapsedTimeScheduler();
+        TaskElapsedTimeScheduler locationUpdatesScheduler;
 
         public MapPage()
         {
             InitializeComponent();
             viewModel = new MapPageViewModel(this.AviationMap);
-            viewModel.MapItemsSearchFrequency = Constants.MAP_ITEMS_SEARCH_FREQUENCY_MILISECONDS;
             BindingContext = viewModel;
 
             regionDataSources = new List<IMapRegionData<MapItemBase>>
@@ -46,47 +45,42 @@ namespace Flightbud.Xamarin.Forms
 
             LoadLocation();
 
-            locationUpdatesScheduler.StartTask(
+            locationUpdatesScheduler = new TaskElapsedTimeScheduler(
                 async () =>
                 {
                     if (viewModel.IsAutoFollow)
                     {
                         await UpdateLocation();
                     }
-                }, Constants.AUTO_FOLLOW_FREQUENCY_MILLISECONDS);
+                }
+                , Constants.AUTO_FOLLOW_FREQUENCY_MILLISECONDS
+                , TaskElapsedTimeSchedulerBehavior.Recurring);
+            locationUpdatesScheduler.Start();
         }
 
         private void LoadLocation()
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                await UpdateLocation(Constants.LOCATION_INITIAL_SPAN_RADIUS);
-                await VisibleRegionChangedEventHandler(this, new VisibleRegionChangedEventArgs { VisibleRegion = viewModel.CurrentGeolocation });
+                await UpdateLocation(Distance.FromKilometers(Constants.LOCATION_INITIAL_SPAN_RADIUS));
             });
         }
 
-        private async Task<bool> UpdateLocation(double radius)
+        private async Task<bool> UpdateLocation(Distance radius)
         {
             try
             {
-                var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
-                viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), Distance.FromKilometers(radius));
-                if (viewModel.CurrentGeolocation != null && viewModel.CurrentGeolocation != default)
+                await Device.InvokeOnMainThreadAsync(async () =>
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
-                    });
-                }
+                    var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
+                    viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), radius);
+                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                });
             }
             catch (OperationCanceledException oce)
             {
                 viewModel.IsAutoFollow = false;
                 locationDataCancellationTokenSource = new CancellationTokenSource();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
 
             return true;
@@ -94,7 +88,7 @@ namespace Flightbud.Xamarin.Forms
 
         private async Task<bool> UpdateLocation()
         {
-            return await UpdateLocation(viewModel.Map.VisibleRegion.Radius.Kilometers);
+            return await UpdateLocation(viewModel.Map.VisibleRegion.Radius);
         }
 
         /// <summary>

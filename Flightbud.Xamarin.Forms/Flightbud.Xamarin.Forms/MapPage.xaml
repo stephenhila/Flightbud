@@ -15,7 +15,6 @@
                                       ItemsSource="{Binding MapItems}"
                                       MapPanning="MapPanningEventHandler"
                                       VisibleRegionChanged="VisibleRegionChangedEventHandler"
-                                      VisibleRegionChangedFrequency="{Binding MapItemsSearchFrequency}"
                                       MapItemDetailsRequested="MapItemDetailsRequestedEventHandler">
                     <controls:AviationMap.ItemTemplate>
                         <DataTemplate>

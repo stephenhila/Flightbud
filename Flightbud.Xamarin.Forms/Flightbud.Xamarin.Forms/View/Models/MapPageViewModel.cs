@@ -13,8 +13,6 @@ namespace Flightbud.Xamarin.Forms.View.Models
     {
         public AviationMap Map { get; set; }
 
-        public double MapItemsSearchFrequency { get; set; }
-
         public MapSpan CurrentGeolocation { get; set; }
 
         public List<MapItemBase> MapItems { get; set; }
