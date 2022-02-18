@@ -19,7 +19,7 @@
 
         //TIMEOUTS
         public const int AUTO_FOLLOW_RESUME_MILLISECONDS = 10000;
-        public const int AUTO_FOLLOW_FREQUENCY_MILLISECONDS = 3333;
+        public const int AUTO_FOLLOW_FREQUENCY_MILLISECONDS = 1500;
         public const int ELAPSED_TIME_LOAD_LOCATIONS_MILISECONDS = 1000;
         public const int ELAPSED_TIME_SCHEDULER_FREQUENCY_MILISECONDS = 500;
     }

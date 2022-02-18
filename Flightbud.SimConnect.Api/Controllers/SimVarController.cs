@@ -50,7 +50,7 @@ namespace Flightbud.SimConnect.Api.Controllers
                         UpdateSimVarResult("GPS POSITION LON");
                         location.Longitude = Convert.ToDouble((result.Value as object[]).FirstOrDefault());
 
-                        UpdateSimVarResult("GPS GROUND TRUE TRACK");
+                        UpdateSimVarResult("GPS GROUND TRUE HEADING");
                         location.Course = Convert.ToDouble((result.Value as object[]).FirstOrDefault());
 
                         UpdateSimVarResult("GPS GROUND SPEED");
@@ -72,6 +72,8 @@ namespace Flightbud.SimConnect.Api.Controllers
                 }
             }
 
+            Thread.Sleep(500);
+
             return location;
         }
 
@@ -90,7 +92,7 @@ namespace Flightbud.SimConnect.Api.Controllers
                 throw new InvalidOperationException($"cannot get SimVar field {simVarFieldName}");
             }
 
-            const int resultDelayCheckMilliseconds = 10;
+            const int resultDelayCheckMilliseconds = 100;
             const int maxWaitForResultMilliseconds = Constants.LOCATION_TIMEOUT;
 
             SimConnectHelper.SimConnectHelper.GetSimVar(requestId);

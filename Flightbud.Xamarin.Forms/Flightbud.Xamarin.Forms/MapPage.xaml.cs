@@ -62,19 +62,25 @@ namespace Flightbud.Xamarin.Forms
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                await UpdateLocation(Distance.FromKilometers(Constants.LOCATION_INITIAL_SPAN_RADIUS));
+                await UpdateLocation();
             });
         }
 
-        private async Task<bool> UpdateLocation(Distance radius)
+        private async Task<bool> UpdateLocation()
         {
             try
             {
                 await Device.InvokeOnMainThreadAsync(async () =>
                 {
                     var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
-                    viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), radius);
-                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                    if (currentLocation != null)
+                    {
+                        lock (viewModel.Map.VisibleRegion)
+                        {
+                            viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), viewModel.Map.VisibleRegion.Radius);
+                        }
+                        viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                    }
                 });
             }
             catch (OperationCanceledException oce)
@@ -84,11 +90,6 @@ namespace Flightbud.Xamarin.Forms
             }
 
             return true;
-        }
-
-        private async Task<bool> UpdateLocation()
-        {
-            return await UpdateLocation(viewModel.Map.VisibleRegion.Radius);
         }
 
         /// <summary>
