@@ -13,8 +13,6 @@ namespace Flightbud.Xamarin.Forms.View.Models
     {
         public AviationMap Map { get; set; }
 
-        public double MapItemsSearchFrequency { get; set; }
-
         public MapSpan CurrentGeolocation { get; set; }
 
         public List<MapItemBase> MapItems { get; set; }
@@ -38,13 +36,6 @@ namespace Flightbud.Xamarin.Forms.View.Models
         {
             get { return _isMapPanning; }
             set { _isMapPanning = value; OnPropertyChanged(); }
-        }
-
-        bool _autoFollow = false;
-        public bool AutoFollow
-        {
-            set { _autoFollow = value; }
-            get { return _autoFollow; OnPropertyChanged(); }
         }
 
         public MapPageViewModel(AviationMap map)

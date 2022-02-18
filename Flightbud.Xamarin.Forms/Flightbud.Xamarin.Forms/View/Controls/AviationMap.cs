@@ -10,38 +10,19 @@ namespace Flightbud.Xamarin.Forms.View.Controls
 {
     public class AviationMap : Map
     {
-        public static readonly BindableProperty VisibleRegionChangedFrequencyProperty = 
-            BindableProperty.Create(
-                propertyName: nameof(VisibleRegionChangedFrequency),
-                returnType: typeof(double),
-                declaringType: typeof(AviationMap),
-                defaultValue: default,
-                defaultBindingMode: BindingMode.OneWay);
-        public double VisibleRegionChangedFrequency
+        public async Task OnMapPanning(MapPanningEventArgs e)
         {
-            get { return Convert.ToDouble(base.GetValue(VisibleRegionChangedFrequencyProperty)); }
-        }
-
-        Stopwatch _stopwatch;
-
-        public AviationMap()
-        {
-            _stopwatch = new Stopwatch();
-            _stopwatch.Start();
+            if (MapPanning != null)
+            {
+                await MapPanning(this, e);
+            }
         }
 
         public async Task OnVisibleRegionChanged(VisibleRegionChangedEventArgs e)
         {
             if (VisibleRegionChanged != null)
             {
-                if (_stopwatch.ElapsedMilliseconds > VisibleRegionChangedFrequency)
-                {
-                    if (VisibleRegion.Radius.Kilometers < Constants.LOCATION_ITEMS_REGION_SPAN_RADIUS_THRESHOLD)
-                    {
-                        await Task.Run(() => VisibleRegionChanged(this, e));
-                    }
-                    _stopwatch.Restart();
-                }
+                await Task.Run(() => VisibleRegionChanged(this, e));
             }
         }
 
@@ -53,10 +34,16 @@ namespace Flightbud.Xamarin.Forms.View.Controls
             }
         }
 
+        public event MapPanningEventHandler MapPanning;
         public event VisibleRegionChangedEventHandler VisibleRegionChanged;
         public event MapItemDetailsRequestedEventHandler MapItemDetailsRequested;
     }
 
+    public class MapPanningEventArgs : EventArgs
+    {
+
+    }
+    public delegate Task MapPanningEventHandler(object sender, MapPanningEventArgs e);
 
     public class VisibleRegionChangedEventArgs : EventArgs
     {

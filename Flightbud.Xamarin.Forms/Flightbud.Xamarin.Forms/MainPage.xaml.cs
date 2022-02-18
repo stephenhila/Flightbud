@@ -14,6 +14,7 @@ namespace Flightbud.Xamarin.Forms
                 {
                     new FlyoutMenuItem { Text = "Home", IconImageSource=@"icon_home.png", TargetType = typeof(HomePage) },
                     new FlyoutMenuItem { Text = "Map", IconImageSource=@"icon_map.png", TargetType = typeof(MapPage) },
+                    new FlyoutMenuItem { Text = "Settings", IconImageSource=@"icon_settings.png", TargetType = typeof(SettingsPage) },
                     new FlyoutMenuItem { Text = "About", IconImageSource=@"icon_about.png", TargetType = typeof(AboutPage) },
                 };
             BindingContext = new MainPageViewModel(menuItems);

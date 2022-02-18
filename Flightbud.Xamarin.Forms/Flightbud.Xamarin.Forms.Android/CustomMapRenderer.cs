@@ -53,21 +53,6 @@ namespace Flightbud.Xamarin.Forms.Droid
             }
         }
 
-        protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            base.OnElementPropertyChanged(sender, e);
-
-            if (sender is AviationMap && e.PropertyName == "VisibleRegion")
-            {
-                await (sender as AviationMap).OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = (sender as AviationMap).VisibleRegion});
-
-                if ((sender as AviationMap).ItemsSource == null)
-                    return;
-
-                UpdatePins(sender as AviationMap);
-            }
-        }
-
         protected void UpdatePins(AviationMap map)
         {
             lock (mapPageViewModel.MapItems)
@@ -93,6 +78,26 @@ namespace Flightbud.Xamarin.Forms.Droid
 
             NativeMap.InfoWindowClick += OnInfoWindowClick;
             NativeMap.SetInfoWindowAdapter(this);
+            NativeMap.CameraIdle += NativeMap_CameraIdle;
+            NativeMap.CameraMoveStarted += NativeMap_CameraMoveStarted;
+        }
+
+        private async void NativeMap_CameraMoveStarted(object sender, GoogleMap.CameraMoveStartedEventArgs e)
+        {
+            if (e.Reason == 1 || e.Reason == 2)
+            {
+                await mapPageViewModel.Map.OnMapPanning(new MapPanningEventArgs());
+            }
+        }
+
+        private async void NativeMap_CameraIdle(object sender, EventArgs e)
+        {
+            await mapPageViewModel.Map.OnVisibleRegionChanged(new VisibleRegionChangedEventArgs { VisibleRegion = mapPageViewModel.Map.VisibleRegion });
+
+            if (mapPageViewModel.Map.ItemsSource == null)
+                return;
+
+            UpdatePins(mapPageViewModel.Map);
         }
 
         protected override MarkerOptions CreateMarker(Pin pin)
@@ -123,6 +128,8 @@ namespace Flightbud.Xamarin.Forms.Droid
 
         public Android.Views.View GetInfoContents(Marker marker)
         {
+            mapPageViewModel.IsAutoFollow = false;
+
             var inflater = Android.App.Application.Context.GetSystemService(Context.LayoutInflaterService) as Android.Views.LayoutInflater;
             if (inflater != null)
             {
