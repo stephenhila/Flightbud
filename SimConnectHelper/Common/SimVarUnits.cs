@@ -105,7 +105,7 @@ namespace SimConnectHelper.Common
             {"GPS FLIGHT PLAN WP INDEX",new SimVarDefinition("GPS FLIGHT PLAN WP INDEX","Index of waypoint","number",null,true,false)},
             {"GPS GROUND MAGNETIC TRACK",new SimVarDefinition("GPS GROUND MAGNETIC TRACK","Current magnetic ground track","radians",ConvertType("float64"),true,false)},
             {"GPS GROUND SPEED",new SimVarDefinition("GPS GROUND SPEED","Current ground speed","meters per second",ConvertType("float64"),true,false)},
-            {"GPS GROUND TRUE HEADING",new SimVarDefinition("GPS GROUND TRUE HEADING","Current true heading","radians",ConvertType("float64"),true,false)},
+            {"GPS GROUND TRUE HEADING",new SimVarDefinition("GPS GROUND TRUE HEADING","Current true heading","degrees",ConvertType("float64"),true,false)},
             {"GPS GROUND TRUE TRACK",new SimVarDefinition("GPS GROUND TRUE TRACK","Current true ground track","radians",null,true,false)},
             {"GPS IS ACTIVE FLIGHT PLAN",new SimVarDefinition("GPS IS ACTIVE FLIGHT PLAN","Flight plan mode active","bool",null,true,false)},
             {"GPS IS ACTIVE WAY POINT",new SimVarDefinition("GPS IS ACTIVE WAY POINT","Waypoint mode active","bool",null,true,false)},

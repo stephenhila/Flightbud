@@ -74,7 +74,7 @@ namespace Flightbud.Xamarin.Forms.UWP
             }
         }
 
-        private async void NativeMap_ActualCameraChanged(MapControl sender, MapActualCameraChangedEventArgs args)
+        private void NativeMap_ActualCameraChanged(MapControl sender, MapActualCameraChangedEventArgs args)
         {
             _taskScheduler.Restart();
         }

@@ -38,7 +38,15 @@ namespace Flightbud.Xamarin.Forms.Data.Facade
                         {
                             string content = await response.Content.ReadAsStringAsync();
                             location = JsonSerializer.Deserialize<Location>(content, _jsonSerializerOptions);
-                            lastKnownLocation = location;
+
+                            if (location.Latitude == 0 && location.Longitude == 0 && lastKnownLocation != null)
+                            {
+                                location = lastKnownLocation;
+                            }
+                            else
+                            {
+                                lastKnownLocation = location;
+                            }
                         }
                         else
                         {

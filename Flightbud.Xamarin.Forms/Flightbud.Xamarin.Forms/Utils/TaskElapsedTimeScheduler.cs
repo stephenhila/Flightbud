@@ -46,21 +46,20 @@ namespace Flightbud.Xamarin.Forms.Utils
                         {
                             try
                             {
-                                await _callback();
                                 _stopwatch.Reset();
+                                await _callback();
+
+                                if (_behavior == TaskElapsedTimeSchedulerBehavior.Recurring)
+                                {
+                                    Start();
+                                }
                             }
                             catch (OperationCanceledException oce)
                             {
-                                _stopwatch.Reset();
                             }
                             catch (Exception ex)
                             {
                                 throw ex;
-                            }
-
-                            if (_behavior == TaskElapsedTimeSchedulerBehavior.Recurring)
-                            {
-                                _stopwatch.Start();
                             }
                         }
                     }, _cancellationTokenSource.Token);
@@ -72,21 +71,19 @@ namespace Flightbud.Xamarin.Forms.Utils
 
         public void Start()
         {
+            _cancellationTokenSource = new CancellationTokenSource();
             _stopwatch.Start();
         }
 
         public void Restart()
         {
             _cancellationTokenSource.Cancel(true);
-            _cancellationTokenSource = new CancellationTokenSource();
-
-            _stopwatch.Start();
+            Start();
         }
 
         public void Stop()
         {
             _cancellationTokenSource.Cancel(true);
-            _cancellationTokenSource = new CancellationTokenSource();
         }
     }
 }
