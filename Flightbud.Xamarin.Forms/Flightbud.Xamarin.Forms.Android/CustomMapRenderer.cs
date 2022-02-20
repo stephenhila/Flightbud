@@ -1,6 +1,9 @@
 ﻿using Android.Content;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using Android.Graphics;
+using Android.Graphics.Drawables;
+using Android.OS;
 using Android.Widget;
 using Flightbud.Xamarin.Forms.Data.Models;
 using Flightbud.Xamarin.Forms.Droid;
@@ -24,6 +27,7 @@ namespace Flightbud.Xamarin.Forms.Droid
     public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter
     {
         MapPageViewModel mapPageViewModel;
+        MarkerOptions currentLocationMarker;
 
         public CustomMapRenderer(Context context) : base(context)
         {
@@ -48,9 +52,22 @@ namespace Flightbud.Xamarin.Forms.Droid
                     if (mapPageViewModel == null)
                     {
                         mapPageViewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
+                        Device.InvokeOnMainThreadAsync(() => mapPageViewModel.Map.Pins.Add(mapPageViewModel.CurrentLocationPin));
+                        mapPageViewModel.Map.CurrentLocationChanged += Map_CurrentLocationChanged;
                     }
                 }
             }
+        }
+
+        private async Task Map_CurrentLocationChanged(object sender, CurrentLocationChangedEventArgs e)
+        {
+            if (currentLocationMarker != null)
+            {
+                currentLocationMarker.SetPosition(new LatLng(e.NewLocation.Latitude, e.NewLocation.Longitude));
+                currentLocationMarker.SetRotation((float)(e.NewLocation.Course ?? 0));
+            }
+            await Device.InvokeOnMainThreadAsync(() => mapPageViewModel.Map.Pins.Remove(mapPageViewModel.CurrentLocationPin));
+            await Device.InvokeOnMainThreadAsync(() => mapPageViewModel.Map.Pins.Add(mapPageViewModel.CurrentLocationPin));
         }
 
         protected void UpdatePins(AviationMap map)
@@ -112,6 +129,15 @@ namespace Flightbud.Xamarin.Forms.Droid
                 marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_map_vor));
             else if (pin is NdbPin)
                 marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_map_ndb));
+            else if (pin is LocationPin)
+            {
+                if (currentLocationMarker == null)
+                {
+                    marker.SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.icon_location_pointer));
+                    currentLocationMarker = marker;
+                }
+                return currentLocationMarker;
+            }
             return marker;
         }
 

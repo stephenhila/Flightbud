@@ -1,15 +1,37 @@
 ﻿using Flightbud.Xamarin.Forms.Data;
 using Flightbud.Xamarin.Forms.Data.Models;
+using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
+using Map = Xamarin.Forms.Maps.Map;
 
 namespace Flightbud.Xamarin.Forms.View.Controls
 {
     public class AviationMap : Map
     {
+        public static readonly BindableProperty CurrentLocationPinProperty =
+        BindableProperty.Create(
+        propertyName: nameof(CurrentLocationPin),
+        returnType: typeof(LocationPin),
+        declaringType: typeof(AviationMap),
+        defaultValue: default,
+        defaultBindingMode: BindingMode.OneWayToSource);
+        public LocationPin CurrentLocationPin
+        {
+            get { return base.GetValue(CurrentLocationPinProperty) as LocationPin; }
+            private set { SetValue(CurrentLocationPinProperty, value); }
+        }
+
+        public AviationMap()
+        {
+            CurrentLocationPin = new LocationPin { Label = "current position" };
+            Pins.Add(CurrentLocationPin);
+        }
+
         public async Task OnMapPanning(MapPanningEventArgs e)
         {
             if (MapPanning != null)
@@ -34,10 +56,25 @@ namespace Flightbud.Xamarin.Forms.View.Controls
             }
         }
 
+        public async Task OnCurrentLocationChanged(CurrentLocationChangedEventArgs e)
+        {
+            if (CurrentLocationChanged != null)
+            {
+                await CurrentLocationChanged(this, e);
+            }
+        }
+
+        public event CurrentLocationChangedEventHandler CurrentLocationChanged;
         public event MapPanningEventHandler MapPanning;
         public event VisibleRegionChangedEventHandler VisibleRegionChanged;
         public event MapItemDetailsRequestedEventHandler MapItemDetailsRequested;
     }
+
+    public class CurrentLocationChangedEventArgs : EventArgs
+    {
+        public Location NewLocation;
+    }
+    public delegate Task CurrentLocationChangedEventHandler(object sender, CurrentLocationChangedEventArgs e);
 
     public class MapPanningEventArgs : EventArgs
     {
