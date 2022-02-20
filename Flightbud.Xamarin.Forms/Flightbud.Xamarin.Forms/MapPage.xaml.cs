@@ -29,6 +29,7 @@ namespace Flightbud.Xamarin.Forms
         CancellationTokenSource locationDataCancellationTokenSource = new CancellationTokenSource();
 
         TaskElapsedTimeScheduler locationUpdatesScheduler;
+        TaskElapsedTimeScheduler autoFollowScheduler;
 
         public MapPage()
         {
@@ -48,14 +49,27 @@ namespace Flightbud.Xamarin.Forms
             locationUpdatesScheduler = new TaskElapsedTimeScheduler(
                 async () =>
                 {
-                    if (viewModel.IsAutoFollow)
-                    {
-                        await UpdateLocation();
-                    }
+                    await UpdateLocation();
                 }
-                , Constants.AUTO_FOLLOW_FREQUENCY_MILLISECONDS
+                , Constants.LOCATION_UPDATE_ELAPSED_MILLISECONDS
                 , TaskElapsedTimeSchedulerBehavior.Recurring);
             locationUpdatesScheduler.Start();
+
+            autoFollowScheduler = new TaskElapsedTimeScheduler(
+                () => 
+                Device.InvokeOnMainThreadAsync(() =>
+                {
+                    if (viewModel.IsAutoFollow && viewModel.CurrentGeolocation != null)
+                    {
+                        lock (viewModel.Map.VisibleRegion)
+                        {
+                            viewModel.Map.MoveToRegion(MapSpan.FromCenterAndRadius(viewModel.CurrentGeolocation.Center, viewModel.Map.VisibleRegion.Radius));
+                        }
+                    }
+                })
+                , Constants.AUTO_FOLLOW_ELAPSED_MILLISECONDS
+                , TaskElapsedTimeSchedulerBehavior.Recurring);
+            autoFollowScheduler.Start();
         }
 
         private void LoadLocation()
@@ -63,6 +77,10 @@ namespace Flightbud.Xamarin.Forms
             Device.BeginInvokeOnMainThread(async () =>
             {
                 await UpdateLocation();
+                lock (viewModel.Map.VisibleRegion)
+                {
+                    viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                }
             });
         }
 
@@ -75,11 +93,9 @@ namespace Flightbud.Xamarin.Forms
                     var currentLocation = await locationDataSource.Get(GeolocationAccuracy.High, Constants.LOCATION_TIMEOUT, locationDataCancellationTokenSource.Token);
                     if (currentLocation != null)
                     {
-                        lock (viewModel.Map.VisibleRegion)
-                        {
-                            viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), viewModel.Map.VisibleRegion.Radius);
-                        }
-                        viewModel.Map.MoveToRegion(viewModel.CurrentGeolocation);
+                        viewModel.CurrentGeolocation = MapSpan.FromCenterAndRadius(new Position(currentLocation.Latitude, currentLocation.Longitude), viewModel.Map.VisibleRegion.Radius);
+                        viewModel.CurrentLocationPin.Position = viewModel.CurrentGeolocation.Center;
+                        await AviationMap.OnCurrentLocationChanged(new CurrentLocationChangedEventArgs { NewLocation = currentLocation });
                     }
                 });
             }

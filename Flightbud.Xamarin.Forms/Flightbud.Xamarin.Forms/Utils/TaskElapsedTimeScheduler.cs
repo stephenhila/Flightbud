@@ -37,7 +37,7 @@ namespace Flightbud.Xamarin.Forms.Utils
 
             _cancellationTokenSource = new CancellationTokenSource();
 
-            Device.StartTimer(TimeSpan.FromMilliseconds(Constants.ELAPSED_TIME_SCHEDULER_FREQUENCY_MILISECONDS),
+            Device.StartTimer(TimeSpan.FromMilliseconds(Constants.ELAPSED_TIME_SCHEDULER_FREQUENCY_MILLISECONDS),
                 () =>
                 {
                     Task.Run(async () =>

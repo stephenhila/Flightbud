@@ -15,6 +15,13 @@ namespace Flightbud.Xamarin.Forms.View.Models
 
         public MapSpan CurrentGeolocation { get; set; }
 
+        LocationPin _currentLocationPin;
+        public LocationPin CurrentLocationPin 
+        { 
+            get { return _currentLocationPin; }
+            set { _currentLocationPin = value; OnPropertyChanged(); }
+        }
+
         public List<MapItemBase> MapItems { get; set; }
 
         bool _isLoading;

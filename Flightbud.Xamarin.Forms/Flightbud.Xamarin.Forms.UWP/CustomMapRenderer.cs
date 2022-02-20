@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
@@ -33,7 +34,9 @@ namespace Flightbud.Xamarin.Forms.UWP
 
         TaskElapsedTimeScheduler _taskScheduler;
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
+        MapElement3D _currentLocationMarker;
+
+        protected async override void OnElementChanged(ElementChangedEventArgs<Map> e)
         {
             base.OnElementChanged(e);
 
@@ -55,12 +58,24 @@ namespace Flightbud.Xamarin.Forms.UWP
                                 Device.BeginInvokeOnMainThread(() => UpdatePins(_mapPageViewModel.Map));
                             }
                         }
-                        , Constants.ELAPSED_TIME_LOAD_LOCATIONS_MILISECONDS
+                        , Constants.ELAPSED_TIME_LOAD_LOCATIONS_MILLISECONDS
                         , TaskElapsedTimeSchedulerBehavior.TriggerOnce);
 
                     if (_mapPageViewModel == null)
                     {
                         _mapPageViewModel = (e.NewElement as AviationMap).BindingContext as MapPageViewModel;
+                        _mapPageViewModel.Map.CurrentLocationChanged += Map_CurrentLocationChanged;
+
+                        var snPosition = new BasicGeoposition { Latitude = _mapPageViewModel.CurrentLocationPin.Position.Latitude, Longitude = _mapPageViewModel.CurrentLocationPin.Position.Longitude };
+                        var snPoint = new Geopoint(snPosition);
+
+                        _currentLocationMarker = new MapElement3D();
+                        _currentLocationMarker.Model = await MapModel3D.CreateFrom3MFAsync(RandomAccessStreamReference.CreateFromUri(new Uri($"ms-appx:///Assets/{_mapPageViewModel.CurrentLocationPin.Model3DPath}")));
+                        _currentLocationMarker.Location = snPoint;
+                        _currentLocationMarker.Scale = new System.Numerics.Vector3 { X = 0.75F, Y = 0.75F, Z = 0.75F };
+                        _currentLocationMarker.ZIndex = int.MaxValue;
+
+                        _nativeMap.MapElements.Add(_currentLocationMarker);
                     }
 
                     if (_mapPinOverlayViewModel == null)
@@ -71,6 +86,23 @@ namespace Flightbud.Xamarin.Forms.UWP
 
                 _nativeMap.Children.Clear();
                 _nativeMap.MapElementClick += OnMapElementClick;
+            }
+        }
+
+        private async Task Map_CurrentLocationChanged(object sender, CurrentLocationChangedEventArgs e)
+        {
+            if (_currentLocationMarker != null)
+            {
+                var snPosition = new BasicGeoposition { Latitude = e.NewLocation.Latitude, Longitude = e.NewLocation.Longitude };
+                var snPoint = new Geopoint(snPosition);
+
+                _currentLocationMarker.Location = snPoint;
+                double heading = (e.NewLocation.Course ?? 0) + _mapPageViewModel.CurrentLocationPin.Model3DRotationOffset;
+                if (heading >= 360)
+                {
+                    heading -= 360;
+                }
+                _currentLocationMarker.Heading = heading;
             }
         }
 
@@ -86,7 +118,9 @@ namespace Flightbud.Xamarin.Forms.UWP
                 foreach (var mapItem in _mapPageViewModel.MapItems)
                 {
                     if (!(_nativeMap.MapElements.Any(elem => 
-                        (elem as MapIcon).Location.Position.Latitude == mapItem.Position.Latitude 
+                        elem is MapIcon
+                     && (elem as MapIcon).Location != null
+                     && (elem as MapIcon).Location.Position.Latitude == mapItem.Position.Latitude 
                      && (elem as MapIcon).Location.Position.Longitude == mapItem.Position.Longitude)))
                     {
                         var snPosition = new BasicGeoposition { Latitude = mapItem.Position.Latitude, Longitude = mapItem.Position.Longitude };
