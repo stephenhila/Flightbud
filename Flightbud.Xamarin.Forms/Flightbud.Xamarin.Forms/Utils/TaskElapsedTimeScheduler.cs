@@ -25,24 +25,34 @@ namespace Flightbud.Xamarin.Forms.Utils
         Stopwatch _stopwatch;
         CancellationTokenSource _cancellationTokenSource;
         Func<Task> _callback;
+        int _elapsedMillisecondsToStart;
 
         public TaskElapsedTimeScheduler(Func<Task> callback,
             int elapsedMillisecondsToStart,
             TaskElapsedTimeSchedulerBehavior behavior = TaskElapsedTimeSchedulerBehavior.TriggerOnce)
         {
             _callback = callback;
+            _elapsedMillisecondsToStart = elapsedMillisecondsToStart;
             _behavior = behavior;
 
             _stopwatch = new Stopwatch();
 
             _cancellationTokenSource = new CancellationTokenSource();
+        }
+
+        bool _isRunning;
+        public void Start()
+        {
+            _stopwatch.Start();
+
+            _isRunning = true;
 
             Device.StartTimer(TimeSpan.FromMilliseconds(Constants.ELAPSED_TIME_SCHEDULER_FREQUENCY_MILLISECONDS),
                 () =>
                 {
                     Task.Run(async () =>
                     {
-                        if (_stopwatch.ElapsedMilliseconds > elapsedMillisecondsToStart)
+                        if (_stopwatch.ElapsedMilliseconds > _elapsedMillisecondsToStart)
                         {
                             try
                             {
@@ -56,6 +66,7 @@ namespace Flightbud.Xamarin.Forms.Utils
                             }
                             catch (OperationCanceledException oce)
                             {
+                                _isRunning = false;
                             }
                             catch (Exception ex)
                             {
@@ -64,20 +75,14 @@ namespace Flightbud.Xamarin.Forms.Utils
                         }
                     }, _cancellationTokenSource.Token);
 
-                    return true;
+                    return _isRunning;
                 });
-
-        }
-
-        public void Start()
-        {
-            _cancellationTokenSource = new CancellationTokenSource();
-            _stopwatch.Start();
         }
 
         public void Restart()
         {
             _cancellationTokenSource.Cancel(true);
+            _cancellationTokenSource = new CancellationTokenSource();
             Start();
         }
 

@@ -44,3 +44,7 @@
     font-size: small;
     text-align: left;
 }
+
+.SearchBar {
+    background-color: lightgray;
+}

@@ -18,7 +18,7 @@ using Xamarin.Forms.Xaml;
 namespace Flightbud.Xamarin.Forms
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MapPage : ContentPage
+    public partial class MapPage : PausableContentPage
     {
         List<IMapRegionData<MapItemBase>> regionDataSources;
         ILocationData locationDataSource;
@@ -208,6 +208,22 @@ namespace Flightbud.Xamarin.Forms
                 airportDetailsPage.ViewModel.SelectedAirport = e.SelectedMapItem as Airport;
                 await Navigation.PushModalAsync(airportDetailsPage);
             }
+        }
+
+        public override void Pause()
+        {
+            regionDataCancellationTokenSource.Cancel();
+            locationDataCancellationTokenSource.Cancel();
+            locationUpdatesScheduler.Stop();
+            autoFollowScheduler.Stop();
+        }
+
+        public override void Resume()
+        {
+            regionDataCancellationTokenSource = new CancellationTokenSource();
+            locationDataCancellationTokenSource = new CancellationTokenSource();
+            locationUpdatesScheduler.Restart();
+            autoFollowScheduler.Restart();
         }
     }
 }

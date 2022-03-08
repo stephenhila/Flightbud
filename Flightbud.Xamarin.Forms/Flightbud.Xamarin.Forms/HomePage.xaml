@@ -4,7 +4,7 @@
              x:Class="Flightbud.Xamarin.Forms.HomePage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Hello Home Page!" />
+            <SearchBar StyleClass="SearchBar"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

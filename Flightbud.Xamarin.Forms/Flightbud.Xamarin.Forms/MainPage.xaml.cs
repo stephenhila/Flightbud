@@ -1,4 +1,5 @@
-﻿using Flightbud.Xamarin.Forms.View.Models;
+﻿using Flightbud.Xamarin.Forms.View.Controls;
+using Flightbud.Xamarin.Forms.View.Models;
 using System;
 using System.Collections.Generic;
 using Xamarin.Forms;
@@ -7,6 +8,7 @@ namespace Flightbud.Xamarin.Forms
 {
     public partial class MainPage : FlyoutPage
     {
+        List<PausableContentPage> _loadedPages = new List<PausableContentPage>();
         public MainPage()
         {
             InitializeComponent();
@@ -27,8 +29,23 @@ namespace Flightbud.Xamarin.Forms
             var item = e.SelectedItem as FlyoutMenuItem;
             if (item != null)
             {
-                Detail = new NavigationPage((Page)Activator.CreateInstance(item.TargetType));
-                //(sender as ListView).SelectedItem = null;
+                ((Detail as NavigationPage)?.CurrentPage as PausableContentPage)?.Pause();
+
+                Page requestedPage = _loadedPages.Find(x => x.GetType() == item.TargetType);
+
+                if (requestedPage == null)
+                {
+                    requestedPage = Activator.CreateInstance(item.TargetType) as Page;
+                    if (requestedPage is PausableContentPage)
+                    {
+                        _loadedPages.Add(requestedPage as PausableContentPage);
+                    }
+                }
+                else
+                {
+                    (requestedPage as PausableContentPage)?.Resume();
+                }
+                Detail = new NavigationPage(requestedPage);
                 IsPresented = false;
             }
         }

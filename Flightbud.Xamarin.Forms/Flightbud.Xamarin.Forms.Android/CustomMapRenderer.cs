@@ -66,8 +66,11 @@ namespace Flightbud.Xamarin.Forms.Droid
                 currentLocationMarker.SetPosition(new LatLng(e.NewLocation.Latitude, e.NewLocation.Longitude));
                 currentLocationMarker.SetRotation((float)(e.NewLocation.Course ?? 0));
             }
-            await Device.InvokeOnMainThreadAsync(() => mapPageViewModel.Map.Pins.Remove(mapPageViewModel.CurrentLocationPin));
-            await Device.InvokeOnMainThreadAsync(() => mapPageViewModel.Map.Pins.Add(mapPageViewModel.CurrentLocationPin));
+            await Device.InvokeOnMainThreadAsync(() =>
+            {
+                mapPageViewModel.Map.Pins.Remove(mapPageViewModel.CurrentLocationPin);
+                mapPageViewModel.Map.Pins.Add(mapPageViewModel.CurrentLocationPin);
+            });
         }
 
         protected void UpdatePins(AviationMap map)
