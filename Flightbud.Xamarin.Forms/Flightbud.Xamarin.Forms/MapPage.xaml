@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<controls:SingletonContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<controls:PausableContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps" 
              xmlns:controls="clr-namespace:Flightbud.Xamarin.Forms.View.Controls"
              x:Class="Flightbud.Xamarin.Forms.MapPage">
-    <controls:SingletonContentPage.Content>
+    <controls:PausableContentPage.Content>
         <ContentView>
             <AbsoluteLayout>
                 <controls:AviationMap x:Name="AviationMap"
@@ -35,5 +35,5 @@
                         IsToggled="{Binding IsAutoFollow}"/>
             </AbsoluteLayout>
         </ContentView>
-    </controls:SingletonContentPage.Content>
-</controls:SingletonContentPage>
+    </controls:PausableContentPage.Content>
+</controls:PausableContentPage>
