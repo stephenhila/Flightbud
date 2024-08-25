@@ -3,6 +3,7 @@
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
 	<application android:label="Flightbud" android:theme="@style/MainTheme">
 		<!--you may create a google maps API Key and paste into the android:value attribute-->
+		<!--https://console.cloud.google.com/google/maps-apis/home-->
 		<meta-data android:name="com.google.android.geo.API_KEY" android:value="[insert_your_api_key]" />
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

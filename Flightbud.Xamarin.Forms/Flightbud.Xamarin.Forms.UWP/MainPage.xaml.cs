@@ -20,8 +20,9 @@ namespace Flightbud.Xamarin.Forms.UWP
         public MainPage()
         {
             this.InitializeComponent();
-            global::Xamarin.FormsMaps.Init("rDFzuoHYGIOMksDDmgAF~g0AFGzuC_TlPuU8bVsTFew~AqLP1dKdQ3FsVPqLflh84t7qX9R_oKU--qM_FlEHaQHo_QqM-TbiaWJknQ1N3QQG");
-            Windows.Services.Maps.MapService.ServiceToken = "rDFzuoHYGIOMksDDmgAF~g0AFGzuC_TlPuU8bVsTFew~AqLP1dKdQ3FsVPqLflh84t7qX9R_oKU--qM_FlEHaQHo_QqM-TbiaWJknQ1N3QQG";
+            //you may create a bing maps API Key and paste into the Init() argument, and ServiceToken property below:
+            global::Xamarin.FormsMaps.Init("[insert_your_api_key]");
+            Windows.Services.Maps.MapService.ServiceToken = "[insert_your_api_key]";
             LoadApplication(new Flightbud.Xamarin.Forms.App());
         }
     }
