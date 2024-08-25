@@ -6,6 +6,7 @@
         <StackLayout>
             <Label Text="Map Data thanks to ourairports.com" />
             <Label Text="Icons thanks to iconscout.com" />
+            <Label Text="Microsoft Flight Simulator 2020 integration helper thanks to Dragonlaird's SimConnectHelper" />
             <Label Text="Author: Stephen Hila" />
         </StackLayout>
     </ContentPage.Content>
